@@ -24,7 +24,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
             CopyCommand = new RelayCommand(Copy, CanCopy);
             OpenLogFolderCommand = new RelayCommand(OpenLogFolder, CanOpenLogFolder);
-            ContinueCommand = new RelayCommand(Close);
+            ContinueCommand = new RelayCommand(Continue);
             ExitCommand = new RelayCommand(Exit);
             RestartCommand = new RelayCommand(Restart);
 
@@ -86,12 +86,23 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         private void Exit()
         {
+            _gestureService.SetBusy();
+
             _applicationService.Exit();
         }
 
         private void Restart()
         {
+            _gestureService.SetBusy();
+
             _applicationService.Restart();
+        }
+
+        private void Continue()
+        {
+            _gestureService.SetBusy();
+
+            Close();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -15,13 +16,13 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         private readonly IDisposable _disposable;
 
-        public MainViewModel(IGestureService gestureService)
+        public MainViewModel(IGestureService gestureService, ISchedulerService schedulerService)
         {
             ThrowFromUiThreadCommand = new RelayCommand<string>(x =>
             {
                 gestureService.SetBusy();
 
-                throw new Exception(x);
+                throw new Exception(x + " - thrown from UI thread.");
             });
 
             ThrowFromTaskCommand = new RelayCommand<string>(x =>
@@ -32,14 +33,29 @@ namespace Simple.Wpf.Exceptions.ViewModels
                 {
                     Thread.Sleep(100);
 
-                    throw new Exception(x);
+                    throw new Exception(x + " - thrown from Task StartNew.");
                 }, TaskCreationOptions.LongRunning);
+            });
+
+
+            ThrowFromRxCommand = new RelayCommand<string>(x =>
+            {
+                gestureService.SetBusy();
+
+                Observable.Start(() =>
+                {
+                    Thread.Sleep(100);
+
+                    throw new Exception(x + " - thrown from Rx Start.");
+                }, schedulerService.TaskPool)
+                .Subscribe();
             });
 
             _disposable = Disposable.Create(() =>
             {
                 ThrowFromUiThreadCommand = null;
                 ThrowFromTaskCommand = null;
+                ThrowFromRxCommand = null;
             });
         }
 
@@ -54,5 +70,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
         public ICommand ThrowFromUiThreadCommand { get; private set; }
 
         public ICommand ThrowFromTaskCommand { get; private set; }
+
+        public ICommand ThrowFromRxCommand { get; private set; }
     }
 }

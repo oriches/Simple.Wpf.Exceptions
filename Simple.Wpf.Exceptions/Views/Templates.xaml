@@ -14,6 +14,8 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="5" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="5" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -40,9 +42,16 @@
 
             <Button Grid.Column="0"
                     Grid.Row="6"
-                    Content="Throw Exception from Task"
+                    Content="Throw Exception from Task StartNew"
                     HorizontalAlignment="Left"
                     Command="{Binding Path=ThrowFromTaskCommand, Mode=OneWay}"
+                    CommandParameter="{Binding Path=Text, ElementName=ExceptionText}" />
+
+            <Button Grid.Column="0"
+                    Grid.Row="8"
+                    Content="Throw Exception from Rx Start"
+                    HorizontalAlignment="Left"
+                    Command="{Binding Path=ThrowFromRxCommand, Mode=OneWay}"
                     CommandParameter="{Binding Path=Text, ElementName=ExceptionText}" />
         </Grid>
 
@@ -50,7 +59,7 @@
 
     <DataTemplate DataType="{x:Type vm:ExceptionViewModel}">
 
-        <Grid Margin="0,10">
+        <Grid Margin="0,5">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -91,46 +100,48 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
-                <StackPanel Grid.Column="0"
+
+                <WrapPanel Grid.Column="0"
                             Grid.Row="0"
                             Orientation="Horizontal"
                             HorizontalAlignment="Left">
 
                     <Button Content="Copy Error Details"
-                            Margin="0,0,5,0"
+                            Margin="0,0,5,5"
                             Command="{Binding Path=CopyCommand, Mode=OneWay}"
                             Style="{DynamicResource ExceptionButtonStyle}" />
 
                     <Button Content="Open Log Folder"
+                            Margin="0,0,0,5"
                             Command="{Binding Path=OpenLogFolderCommand, Mode=OneWay}"
                             Style="{DynamicResource ExceptionButtonStyle}" />
 
-                </StackPanel>
+                </WrapPanel>
 
-                <StackPanel Grid.Column="1"
+                <WrapPanel Grid.Column="1"
                             Grid.Row="0"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
 
                     <Button Content="Continue"
-                            Margin="0,0,5,0"
+                            Margin="0,0,5,5"
                             Command="{Binding Path=ContinueCommand, Mode=OneWay}"
                             Style="{StaticResource ExceptionButtonStyle}" />
 
                     <Button Content="Restart"
-                            Margin="0,0,5,0"
+                            Margin="0,0,5,5"
                             Command="{Binding Path=RestartCommand, Mode=OneWay}"
                             Style="{StaticResource ExceptionButtonStyle}" />
 
                     <Button Content="Exit"
+                            Margin="0,0,0,5"
                             Command="{Binding Path=ExitCommand, Mode=OneWay}"
                             Style="{StaticResource ExceptionButtonStyle}" />
 
-                </StackPanel>
-                
+                </WrapPanel>
+
             </Grid>
-            
+
         </Grid>
 
     </DataTemplate>

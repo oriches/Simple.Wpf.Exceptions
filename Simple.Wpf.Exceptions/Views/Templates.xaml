@@ -63,7 +63,7 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="0"
                        TextWrapping="Wrap">
-                <Run>An exception has happened, it's been caught and the associated message is displayed below. What do you want to do?</Run>
+                <Run>An error has happened, it's been caught and the associated message is displayed below. What do you want to do?</Run>
                 <LineBreak />
                 <LineBreak />
                 <Run>You can</Run>

@@ -1,0 +1,30 @@
+<mh:MetroWindow x:Class="Simple.Wpf.Exceptions.Views.MainWindow"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mh="http://metro.mahapps.com/winfx/xaml/controls"
+                xmlns:viewModels="clr-namespace:Simple.Wpf.Exceptions.ViewModels"
+                Title="MainWindow"
+                BorderBrush="{StaticResource AccentColorBrush}"
+                BorderThickness="1"
+                d:DataContext="{d:DesignInstance viewModels:ChromeViewModel}">
+
+    <mh:MetroWindow.Flyouts>
+        <mh:FlyoutsControl>
+
+            <mh:Flyout Header="{Binding Path=OverlayHeader, Mode=OneWay}"
+                       Position="Right"
+                       Width="400"
+                       CloseCommand="{Binding Path=CloseOverlayCommand, Mode=OneWay}"
+                       Content="{Binding Path=Overlay, Mode=OneWay}"
+                       Visibility="{Binding Path=HasOverlay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            </mh:Flyout>
+
+        </mh:FlyoutsControl>
+    </mh:MetroWindow.Flyouts>
+
+    <ContentPresenter Content="{Binding Path=Main, Mode=OneTime}" />
+
+</mh:MetroWindow>

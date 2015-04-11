@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 using Moq;
+using Microsoft.Reactive.Testing;
 using NUnit.Framework;
 using Simple.Wpf.Exceptions.Extensions;
 using Simple.Wpf.Exceptions.Services;
@@ -12,6 +13,9 @@ namespace Simple.Wpf.Exceptions.Tests
     [TestFixture]
     public sealed class ChromeViewModelFixtures
     {
+        private TestScheduler _testScheduler;
+        private ISchedulerService _schedulerService;
+
         private Mock<IGestureService> _gestureService;
         private Mock<IOverlayService> _overlayService;
 
@@ -22,6 +26,9 @@ namespace Simple.Wpf.Exceptions.Tests
         [SetUp]
         public void Setup()
         {
+            _testScheduler = new TestScheduler();
+            _schedulerService = new MockSchedulerService(_testScheduler);
+
             _overlayService = new Mock<IOverlayService>();
 
             _gestureService = new Mock<IGestureService>();
@@ -30,7 +37,7 @@ namespace Simple.Wpf.Exceptions.Tests
             _show = new Subject<OverlayViewModel>();
             _overlayService.Setup(x => x.Show).Returns(_show);
 
-            _mainViewModel = new MainViewModel(_gestureService.Object);
+            _mainViewModel = new MainViewModel(_gestureService.Object, _schedulerService);
         }
 
         [Test]

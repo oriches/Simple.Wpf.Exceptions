@@ -71,6 +71,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExceptionViewModelFixtures.cs" />
     <Compile Include="ChromeViewModelFixtures.cs" />
     <Compile Include="MainViewModelFixtures.cs" />
     <Compile Include="MessageServiceFixtures.cs" />

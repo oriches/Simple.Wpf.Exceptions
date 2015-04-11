@@ -58,7 +58,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         public ICommand RestartCommand { get; private set; }
 
-        public string Message { get { return _exception.Message; } }
+        public string Message { get { return _exception != null ? _exception.Message : null; } }
 
         private bool CanCopy()
         {

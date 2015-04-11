@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Reactive.Disposables;
 using Microsoft.Reactive.Testing;
 using Moq;
@@ -44,7 +46,7 @@ namespace Simple.Wpf.Exceptions.Tests
         }
 
         [Test]
-        public void posts_overlay_without_lifetime()
+        public void posts_message_without_lifetime()
         {
             // ARRANGE
             var contentViewModel = new Mock<CloseableViewModel>();
@@ -62,6 +64,31 @@ namespace Simple.Wpf.Exceptions.Tests
             Assert.That(messageViewModel.Lifetime, Is.Null);
             Assert.That(messageViewModel.Header, Is.EqualTo("header 1"));
             Assert.That(messageViewModel.ViewModel, Is.EqualTo(contentViewModel.Object));
+        }
+
+        [Test]
+        public void posts_mulitple_messages()
+        {
+            // ARRANGE
+            var contentViewModel1 = new Mock<CloseableViewModel>();
+            var contentViewModel2 = new Mock<CloseableViewModel>();
+
+            var service = new MessageService(_schedulerService);
+
+            var messages = new List<MessageViewModel>();
+            service.Show.Subscribe(x => messages.Add(x));
+
+            service.Post("header 1", contentViewModel1.Object, Disposable.Empty);
+            service.Post("header 2", contentViewModel2.Object, Disposable.Empty);
+
+            // ACT
+            messages.First().ViewModel.CloseCommand.Execute(null);
+
+            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(2));
+
+            // ASSERT
+            Assert.That(messages.Count(x => x.Header == "header 1") == 1, Is.True);
+            Assert.That(messages.Count(x => x.Header == "header 2") == 1, Is.True);
         }
 
         [Test]

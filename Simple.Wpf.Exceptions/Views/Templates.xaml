@@ -57,7 +57,7 @@
             <TextBlock Grid.Column="0"
                        Grid.Row="9"
                        VerticalAlignment="Bottom"
-                       Text="TPL &amp; Rx exceptions are propergated from the finalizer thread, there will be a delay between clicking the button and it appearing!" />
+                       Text="TPL &amp; Rx exceptions are propagated from the finalizer thread, there will be a delay between clicking the button and it appearing!" />
         </Grid>
 
     </DataTemplate>

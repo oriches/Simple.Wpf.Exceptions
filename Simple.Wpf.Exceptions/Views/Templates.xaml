@@ -96,6 +96,7 @@
                      IsReadOnly="True"
                      MinHeight="75"
                      HorizontalAlignment="Stretch"
+                     TextWrapping="Wrap"
                      Text="{Binding Path=Message, Mode=OneTime}"/>
 
             <Grid Grid.Column="0"

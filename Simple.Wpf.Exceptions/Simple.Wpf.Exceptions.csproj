@@ -98,13 +98,11 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\AddRangeExtensions.cs" />
     <Compile Include="Extensions\ForEachExtensions.cs" />
-    <Compile Include="Extensions\MemoryExtensions.cs" />
     <Compile Include="Extensions\NotifyCollectionChangedExtensions.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
     <Compile Include="Extensions\ToObservableCollectionExtensions.cs" />
     <Compile Include="Extensions\UnitExtensions.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
-    <Compile Include="Models\MemoryUnits.cs" />
     <Compile Include="NLogFormattedThreadIdLayoutRenderer.cs" />
     <Compile Include="Services\ApplicationService.cs" />
     <Compile Include="Duration.cs" />
@@ -115,7 +113,6 @@
     <Compile Include="Services\IGestureService.cs" />
     <Compile Include="Services\IMessageService.cs" />
     <Compile Include="Services\ISchedulerService.cs" />
-    <Compile Include="Models\Memory.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Services\SchedulerService.cs" />

@@ -103,11 +103,13 @@ namespace Simple.Wpf.Exceptions
 
         private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
         {
+            Logger.Info("Unhandled app domain exception");
             HandleException(args.ExceptionObject as Exception);
         }
 
         private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
         {
+            Logger.Info("Unhandled dispatcher thread exception");
             args.Handled = true;
 
             HandleException(args.Exception);
@@ -115,6 +117,7 @@ namespace Simple.Wpf.Exceptions
 
         private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs args)
         {
+            Logger.Info("Unhandled task exception");
             args.SetObserved();
 
             HandleException(args.Exception.GetBaseException());

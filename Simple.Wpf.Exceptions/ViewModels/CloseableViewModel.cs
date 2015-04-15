@@ -54,7 +54,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
             }
         }
 
-        protected void Close()
+        protected virtual void Close()
         {
             CloseCommand.Execute(null);
         }

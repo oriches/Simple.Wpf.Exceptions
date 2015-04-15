@@ -64,12 +64,16 @@ namespace Simple.Wpf.Exceptions.Tests
             var viewModel = new MainViewModel(_gestureService.Object, _schedulerService);
 
             Exception thrownException = null;
-            TaskScheduler.UnobservedTaskException += (s, e) => { thrownException = e.Exception.InnerException; };
+            TaskScheduler.UnobservedTaskException += (s, e) =>
+            {
+                thrownException = e.Exception.InnerException;
+            };
 
             // ACT
             viewModel.ThrowFromTaskCommand.Execute(exceptionText);
 
-            Thread.Sleep(1000);
+            // Hack to test this...
+            Thread.Sleep(5000);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

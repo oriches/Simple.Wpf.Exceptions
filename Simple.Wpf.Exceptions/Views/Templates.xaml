@@ -16,12 +16,13 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="5" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
 
             <TextBlock Grid.Column="0"
                        Grid.Row="0"
+                       TextWrapping="Wrap"
                        Text="Exceptions demo - enter some text and choose the exception you want to throw exception:" />
 
             <TextBox x:Name="ExceptionText"
@@ -56,7 +57,9 @@
 
             <TextBlock Grid.Column="0"
                        Grid.Row="9"
-                       VerticalAlignment="Bottom"
+                       Margin="0,20,0,0"
+                       VerticalAlignment="Top"
+                       TextWrapping="Wrap"
                        Text="TPL &amp; Rx exceptions are propagated from the finalizer thread, there will be a delay between clicking the button and it appearing!" />
         </Grid>
 
@@ -96,7 +99,6 @@
                      IsReadOnly="True"
                      MinHeight="75"
                      HorizontalAlignment="Stretch"
-                     TextWrapping="Wrap"
                      Text="{Binding Path=Message, Mode=OneTime}"/>
 
             <Grid Grid.Column="0"

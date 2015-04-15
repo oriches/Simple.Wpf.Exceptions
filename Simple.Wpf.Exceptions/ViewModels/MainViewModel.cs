@@ -20,6 +20,8 @@ namespace Simple.Wpf.Exceptions.ViewModels
         {
             ThrowFromUiThreadCommand = new RelayCommand<string>(x =>
             {
+                Logger.Info("ThrowFromUiThreadCommand executing...");
+
                 gestureService.SetBusy();
 
                 throw new Exception(x + " - thrown from UI thread.");
@@ -27,11 +29,13 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
             ThrowFromTaskCommand = new RelayCommand<string>(x =>
             {
+                Logger.Info("ThrowFromTaskCommand executing...");
+
                 gestureService.SetBusy();
 
                 Task.Factory.StartNew(() =>
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
 
                     throw new Exception(x + " - thrown from Task StartNew.");
                 }, TaskCreationOptions.LongRunning);
@@ -40,14 +44,17 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
             ThrowFromRxCommand = new RelayCommand<string>(x =>
             {
+                Logger.Info("ThrowFromRxCommand executing...");
+
                 gestureService.SetBusy();
 
                 Observable.Start(() =>
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(1000);
 
                     throw new Exception(x + " - thrown from Rx Start.");
                 }, schedulerService.TaskPool)
+                .Take(1)
                 .Subscribe();
             });
 

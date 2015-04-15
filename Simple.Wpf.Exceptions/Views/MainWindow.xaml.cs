@@ -1,13 +1,12 @@
+using System;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
+using MahApps.Metro.Controls.Dialogs;
+using Simple.Wpf.Exceptions.Services;
 using Simple.Wpf.Exceptions.ViewModels;
 
 namespace Simple.Wpf.Exceptions.Views
 {
-    using System;
-    using MahApps.Metro.Controls.Dialogs;
-    using Services;
-
     public partial class MainWindow
     {
         private readonly IDisposable _disposable;

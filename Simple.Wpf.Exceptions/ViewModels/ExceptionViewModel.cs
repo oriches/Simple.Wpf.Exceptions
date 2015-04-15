@@ -45,6 +45,9 @@ namespace Simple.Wpf.Exceptions.ViewModels
                 base.Dispose();
 
                 _disposable.Dispose();
+
+                // Force all other potential exceptions propagated from the Finalizer thread to surface to the UI
+                GC.WaitForPendingFinalizers();
             }
         }
 

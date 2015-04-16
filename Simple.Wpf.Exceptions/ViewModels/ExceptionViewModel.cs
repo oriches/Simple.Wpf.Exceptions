@@ -1,5 +1,6 @@
 using System;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using NLog;
 using Simple.Wpf.Exceptions.Commands;
@@ -28,8 +29,18 @@ namespace Simple.Wpf.Exceptions.ViewModels
             ExitCommand = new RelayCommand(Exit);
             RestartCommand = new RelayCommand(Restart);
 
+            var closedDisposable = Closed.Take(1).Subscribe(x =>
+            {
+                // Force all other potential exceptions to be realized
+                // from the Finalizer thread to surface to the UI
+                GC.Collect(2, GCCollectionMode.Forced);
+                GC.WaitForPendingFinalizers();
+            });
+
             _disposable = Disposable.Create(() =>
             {
+                closedDisposable.Dispose();
+
                 CopyCommand = null;
                 OpenLogFolderCommand = null;
                 ContinueCommand = null;
@@ -101,11 +112,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
         private void Continue()
         {
             _gestureService.SetBusy();
-
-            // Force all other potential exceptions to be realized
-            // from the Finalizer thread to surface to the UI
-            GC.Collect(2, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers();
 
             Close();
         }

@@ -1,7 +1,6 @@
 using System;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 using NLog;
@@ -54,7 +53,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
             }
         }
 
-        protected virtual void Close()
+        protected void Close()
         {
             CloseCommand.Execute(null);
         }

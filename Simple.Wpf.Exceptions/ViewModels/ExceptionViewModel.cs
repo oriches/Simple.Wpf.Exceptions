@@ -60,16 +60,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         public string Message { get { return _exception != null ? _exception.Message : null; } }
 
-        protected override void Close()
-        {
-            base.Close();
-
-            // Force all other potential exceptions to be realized
-            // from the Finalizer thread to surface to the UI
-            GC.Collect(2, GCCollectionMode.Forced);
-            GC.WaitForPendingFinalizers();
-        }
-
         private bool CanCopy()
         {
             return _exception != null;
@@ -111,6 +101,11 @@ namespace Simple.Wpf.Exceptions.ViewModels
         private void Continue()
         {
             _gestureService.SetBusy();
+
+            // Force all other potential exceptions to be realized
+            // from the Finalizer thread to surface to the UI
+            GC.Collect(2, GCCollectionMode.Forced);
+            GC.WaitForPendingFinalizers();
 
             Close();
         }

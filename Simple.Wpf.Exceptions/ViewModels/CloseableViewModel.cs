@@ -21,7 +21,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
             CloseCommand = new RelayCommand(() =>
             {
-                _closed.OnCompleted();
+                _closed.OnNext(Unit.Default);
             });
 
             _disposable = Disposable.Create(() =>

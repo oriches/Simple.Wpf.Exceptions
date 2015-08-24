@@ -17,6 +17,8 @@ namespace Simple.Wpf.Exceptions.Services
         private readonly IDisposable _disposable;
         private readonly Subject<MessageViewModel> _show;
         private readonly Queue<MessageViewModel> _waitingMessages = new Queue<MessageViewModel>();
+		
+		private readonly object _sync = new object();
 
         public MessageService(ISchedulerService schedulerService)
         {
@@ -43,23 +45,40 @@ namespace Simple.Wpf.Exceptions.Services
         public void Post(string header, CloseableViewModel viewModel, IDisposable lifetime)
         {
             var newMessage = new MessageViewModel(header, viewModel, lifetime);
+			
             newMessage.ViewModel.Closed
-                .ObserveOn(_schedulerService.Dispatcher)
+			    .Take(1)
                 .Subscribe(x =>
                 {
-                    using (_waitingMessages.Dequeue().ViewModel)
-                    {
-                        if (_waitingMessages.Any())
-                        {
-                            _show.OnNext(_waitingMessages.Peek());
-                        }
-                    }
+					MessageViewModel nextMessage = null;
+					lock(_sync)
+					{
+						_waitingMessages.Dequeue();
+						
+						if (_waitingMessages.Any())
+						{
+							nextMessage = _waitingMessages.Peek();
+						}
+					}
+					
+					if (nextMessage != null)
+					{
+						_show.OnNext(nextMessage);
+					}
+					
+					newMessage.ViewModel.Dispose();
                 });
 
-            _waitingMessages.Enqueue(newMessage);
-            if (_waitingMessages.Count == 1)
+			var show = false;
+			lock(_sync)
+			{
+				_waitingMessages.Enqueue(newMessage);
+				show = _waitingMessages.Count == 1;
+			}
+            
+            if (show)
             {
-                _show.OnNext(_waitingMessages.Peek());
+                _show.OnNext(newMessage);
             }
         }
 

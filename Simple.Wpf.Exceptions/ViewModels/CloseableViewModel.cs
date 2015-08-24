@@ -12,7 +12,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly Subject<Unit> _closing;
         private readonly Subject<Unit> _closed;
         private readonly IDisposable _disposable;
 
@@ -23,23 +22,15 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
             CloseCommand = new RelayCommand(() =>
             {
-                _closing.OnNext(Unit.Default);
-                _closing.OnCompleted();
-
-                _closed.OnNext(Unit.Default);
                 _closed.OnCompleted();
             });
 
             _disposable = Disposable.Create(() =>
             {
                 CloseCommand = null;
-
-                _closing.Dispose();
                 _closed.Dispose();
             });
         }
-
-        public IObservable<Unit> Closing { get { return _closing; } }
 
         public IObservable<Unit> Closed { get { return _closed; } }
 

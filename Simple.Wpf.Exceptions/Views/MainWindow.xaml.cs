@@ -29,7 +29,7 @@ namespace Simple.Wpf.Exceptions.Views
                 .Select(x => new MessageDialog { Title = x.Header, Content = x.ViewModel })
                 .SelectMany(x => this.ShowMetroDialogAsync(x, settings).ToObservable(), (x, y) => x)
                 .ObserveOn(schedulerService.Dispatcher)
-                .SelectMany(x => ((CloseableViewModel)x.Content).Closing, (x, y) => x)
+                .SelectMany(x => ((CloseableViewModel)x.Content).Closed, (x, y) => x)
                 .Select(x => this.HideMetroDialogAsync(x).ToObservable())
                 .Subscribe();
 

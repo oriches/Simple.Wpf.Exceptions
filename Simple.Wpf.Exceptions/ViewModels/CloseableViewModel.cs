@@ -17,7 +17,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         protected CloseableViewModel()
         {
-            _closing = new Subject<Unit>();
             _closed = new Subject<Unit>();
 
             CloseCommand = new RelayCommand(() =>

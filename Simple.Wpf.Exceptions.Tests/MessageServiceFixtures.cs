@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Disposables;
-using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
 using Simple.Wpf.Exceptions.Services;
@@ -13,16 +12,6 @@ namespace Simple.Wpf.Exceptions.Tests
     [TestFixture]
     public sealed class MessageServiceFixtures
     {
-        private ISchedulerService _schedulerService;
-        private TestScheduler _testScheduler;
-
-        [SetUp]
-        public void Setup()
-        {
-            _testScheduler = new TestScheduler();
-            _schedulerService = new MockSchedulerService(_testScheduler);
-        }
-
         [Test]
         public void posts_message_with_lifetime()
         {
@@ -30,7 +19,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var contentViewModel = new Mock<CloseableViewModel>();
             var lifetime = Disposable.Empty;
 
-            var service = new MessageService(_schedulerService);
+            var service = new MessageService();
 
             MessageViewModel messageViewModel = null;
             service.Show.Subscribe(x => messageViewModel = x);
@@ -51,7 +40,7 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             var contentViewModel = new Mock<CloseableViewModel>();
 
-            var service = new MessageService(_schedulerService);
+            var service = new MessageService();
 
             MessageViewModel messageViewModel = null;
             service.Show.Subscribe(x => messageViewModel = x);
@@ -73,7 +62,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var contentViewModel1 = new Mock<CloseableViewModel>();
             var contentViewModel2 = new Mock<CloseableViewModel>();
 
-            var service = new MessageService(_schedulerService);
+            var service = new MessageService();
 
             var messages = new List<MessageViewModel>();
             service.Show.Subscribe(x => messages.Add(x));
@@ -83,8 +72,6 @@ namespace Simple.Wpf.Exceptions.Tests
 
             // ACT
             messages.First().ViewModel.CloseCommand.Execute(null);
-
-            _testScheduler.AdvanceBy(TimeSpan.FromSeconds(2));
 
             // ASSERT
             Assert.That(messages.Count(x => x.Header == "header 1") == 1, Is.True);
@@ -97,7 +84,7 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             var completed = false;
 
-            var service = new MessageService(_schedulerService);
+            var service = new MessageService();
             service.Show.Subscribe(x => { }, () => { completed = true; });
 
             // ACT

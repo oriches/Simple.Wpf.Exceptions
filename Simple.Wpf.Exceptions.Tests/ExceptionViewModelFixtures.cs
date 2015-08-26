@@ -1,9 +1,6 @@
 using System;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
 using System.Windows.Input;
 using Moq;
-using Microsoft.Reactive.Testing;
 using NUnit.Framework;
 using Simple.Wpf.Exceptions.Extensions;
 using Simple.Wpf.Exceptions.Services;
@@ -14,22 +11,13 @@ namespace Simple.Wpf.Exceptions.Tests
     [TestFixture]
     public sealed class ExceptionViewModelFixtures
     {
-        private TestScheduler _testScheduler;
-        private ISchedulerService _schedulerService;
 
         private Mock<IGestureService> _gestureService;
         private Mock<IApplicationService> _applicationService;
 
-        private Subject<OverlayViewModel> _show;
-
-        private MainViewModel _mainViewModel;
-
         [SetUp]
         public void Setup()
         {
-            _testScheduler = new TestScheduler();
-            _schedulerService = new MockSchedulerService(_testScheduler);
-
             _applicationService = new Mock<IApplicationService>();
 
             _gestureService = new Mock<IGestureService>();
@@ -142,7 +130,7 @@ namespace Simple.Wpf.Exceptions.Tests
         public void opens_log_folder()
         {
             // ARRANGE
-            _applicationService.SetupGet<string>(x => x.LogFolder).Returns(@"c:\temp\log.txt");
+            _applicationService.SetupGet(x => x.LogFolder).Returns(@"c:\temp\log.txt");
             _applicationService.Setup(x => x.OpenFolder(@"c:\temp\log.txt"));
 
             var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);

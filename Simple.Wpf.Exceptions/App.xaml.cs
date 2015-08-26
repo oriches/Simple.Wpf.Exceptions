@@ -132,9 +132,9 @@ namespace Simple.Wpf.Exceptions
                 var parameters = new Parameter[] { new NamedParameter("exception", exception) };
                 var ownedViewModel = BootStrapper.Resolve<Owned<ExceptionViewModel>>(parameters);
 
-                _messageService.Post("whoops - something's gone wrong!", ownedViewModel.Value, ownedViewModel);
-
-                return Disposable.Empty;
+                return _messageService.Post("whoops - something's gone wrong!", ownedViewModel.Value, ownedViewModel)
+                    .Take(1)
+                    .Subscribe(x => ownedViewModel.Dispose());
             });
         }
     }

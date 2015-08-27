@@ -11,11 +11,11 @@ namespace Simple.Wpf.Exceptions.Services
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IDisposable _disposable;
-        private readonly Subject<OverlayViewModel> _show;
+        private readonly Subject<Message> _show;
         
         public OverlayService()
         {
-            _show = new Subject<OverlayViewModel>();
+            _show = new Subject<Message>();
 
             _disposable = Disposable.Create(() =>
             {
@@ -32,11 +32,11 @@ namespace Simple.Wpf.Exceptions.Services
             }
         }
 
-        public void Post(string header, BaseViewModel viewModel, IDisposable lifetime)
+        public void Post(string header, CloseableViewModel viewModel)
         {
-            _show.OnNext(new OverlayViewModel(header, viewModel, lifetime));
+            _show.OnNext(new Message(header, viewModel));
         }
 
-        public IObservable<OverlayViewModel> Show { get { return _show; } }
+        public IObservable<Message> Show { get { return _show; } }
     }
 }

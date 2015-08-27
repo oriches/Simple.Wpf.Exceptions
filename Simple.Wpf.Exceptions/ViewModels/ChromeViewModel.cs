@@ -1,8 +1,8 @@
 using System;
-using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows.Input;
 using NLog;
-using Simple.Wpf.Exceptions.Commands;
+using Simple.Wpf.Exceptions.Models;
 using Simple.Wpf.Exceptions.Services;
 
 namespace Simple.Wpf.Exceptions.ViewModels
@@ -13,23 +13,14 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         private readonly IDisposable _disposable;
 
-        private OverlayViewModel _overlay;
+        private Message _message;
         
         public ChromeViewModel(MainViewModel main, IOverlayService overlayService)
         {
             Main = main;
 
-            CloseOverlayCommand = new RelayCommand(ClearOverlay);
-
-            _disposable = new CompositeDisposable(new []
-            {
-                overlayService.Show.Subscribe(UpdateOverlay),
-                
-                Disposable.Create(() =>
-                {
-                    CloseOverlayCommand = null;
-                })
-            });
+            _disposable = overlayService.Show
+                .Subscribe(UpdateOverlay);
         }
         
         public void Dispose()
@@ -42,42 +33,44 @@ namespace Simple.Wpf.Exceptions.ViewModels
         
         public MainViewModel Main { get; private set; }
         
-        public ICommand CloseOverlayCommand { get; private set; }
+        public ICommand CloseOverlayCommand { get { return _message != null ? _message.ViewModel.CloseCommand : null; } }
 
-        public bool HasOverlay { get { return _overlay != null; } }
+        public bool HasOverlay { get { return _message != null; } }
 
-        public string OverlayHeader { get { return _overlay != null ? _overlay.Header : string.Empty; } }
+        public string OverlayHeader { get { return _message != null ? _message.Header : string.Empty; } }
 
-        public BaseViewModel Overlay { get { return _overlay != null ? _overlay.ViewModel : null; } }
-
-        private void ClearOverlay()
+        public CloseableViewModel Overlay { get { return _message != null ? _message.ViewModel : null; } }
+        
+        private void UpdateOverlay(Message message)
         {
-            using(_overlay.Lifetime)
+            if (_message != null)
             {
-                UpdateOverlayImpl(null);
+                _message.ViewModel.Close();
             }
-        }
 
-        private void UpdateOverlay(OverlayViewModel overlay)
-        {
-            using (SuspendNotifications())
+            if (message != null)
             {
-                if (_overlay != null)
-                {
-                    ClearOverlay();
-                }
-
-                UpdateOverlayImpl(overlay);
+                message.ViewModel.Closed
+                    .Take(1)
+                    .Subscribe(x => ClearOverlay());
             }
-        }
 
-        private void UpdateOverlayImpl(OverlayViewModel overlay)
-        {
-            _overlay = overlay;
+            _message = message;
 
             OnPropertyChanged(() => HasOverlay);
             OnPropertyChanged(() => Overlay);
             OnPropertyChanged(() => OverlayHeader);
+            OnPropertyChanged(() => CloseOverlayCommand);
+        }
+
+        private void ClearOverlay()
+        {
+            _message = null;
+
+            OnPropertyChanged(() => HasOverlay);
+            OnPropertyChanged(() => Overlay);
+            OnPropertyChanged(() => OverlayHeader);
+            OnPropertyChanged(() => CloseOverlayCommand);
         }
     }
 }

@@ -5,8 +5,8 @@ namespace Simple.Wpf.Exceptions.Services
 {
     public interface IOverlayService
     {
-        IObservable<OverlayViewModel> Show { get; }
+        IObservable<Message> Show { get; }
 
-        void Post(string header, BaseViewModel viewModel, IDisposable lifetime);
+        void Post(string header, ClosableViewModel viewModel);
     }
 }

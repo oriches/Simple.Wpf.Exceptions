@@ -15,14 +15,14 @@ namespace Simple.Wpf.Exceptions.Services
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IDisposable _disposable;
-        private readonly Subject<MessageViewModel> _show;
-        private readonly Queue<MessageViewModel> _waitingMessages = new Queue<MessageViewModel>();
+        private readonly Subject<Message> _show;
+        private readonly Queue<Message> _waitingMessages = new Queue<Message>();
 		
 		private readonly object _sync = new object();
 
         public MessageService()
         {
-            _show = new Subject<MessageViewModel>();
+            _show = new Subject<Message>();
 
             _disposable = Disposable.Create(() =>
             {
@@ -43,13 +43,13 @@ namespace Simple.Wpf.Exceptions.Services
 
         public void Post(string header, CloseableViewModel viewModel)
         {
-            var newMessage = new MessageViewModel(header, viewModel, lifetime);
+            var newMessage = new Message(header, viewModel);
 			
             newMessage.ViewModel.Closed
 				.Take(1)
 			    .Subscribe(x =>
                 {
-					MessageViewModel nextMessage = null;
+					Message nextMessage = null;
 					lock(_sync)
 					{
 						_waitingMessages.Dequeue();
@@ -79,6 +79,6 @@ namespace Simple.Wpf.Exceptions.Services
             }
         }
 
-        public IObservable<MessageViewModel> Show { get { return _show; } }
+        public IObservable<Message> Show { get { return _show; } }
     }
 }

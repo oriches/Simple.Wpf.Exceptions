@@ -12,12 +12,16 @@ namespace Simple.Wpf.Exceptions.ViewModels
 {
     public sealed class MainViewModel : BaseViewModel, IDisposable
     {
+        private readonly IOverlayService _overlayService;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private readonly IDisposable _disposable;
+        private readonly SerialDisposable _overlayDisposable;
 
-        public MainViewModel(IGestureService gestureService, ISchedulerService schedulerService)
+        public MainViewModel(IGestureService gestureService, IOverlayService overlayService, ISchedulerService schedulerService)
         {
+            _overlayService = overlayService;
+
             ThrowFromUiThreadCommand = new RelayCommand<string>(x =>
             {
                 Logger.Info("ThrowFromUiThreadCommand executing...");
@@ -58,14 +62,24 @@ namespace Simple.Wpf.Exceptions.ViewModels
                 .Subscribe();
             });
 
-            _disposable = Disposable.Create(() =>
-            {
-                ThrowFromUiThreadCommand = null;
-                ThrowFromTaskCommand = null;
-                ThrowFromRxCommand = null;
-            });
-        }
+            OverlayCommand = new RelayCommand(Overlay);
 
+            _overlayDisposable = new SerialDisposable();
+            
+            _disposable = new CompositeDisposable
+            {
+                _overlayDisposable,
+
+                Disposable.Create(() =>
+                {
+                    ThrowFromUiThreadCommand = null;
+                    ThrowFromTaskCommand = null;
+                    ThrowFromRxCommand = null;
+                    OverlayCommand = null;
+                })
+            };
+        }
+        
         public void Dispose()
         {
             using (Duration.Measure(Logger, "Dispose"))
@@ -79,5 +93,18 @@ namespace Simple.Wpf.Exceptions.ViewModels
         public ICommand ThrowFromTaskCommand { get; private set; }
 
         public ICommand ThrowFromRxCommand { get; private set; }
+
+        public ICommand OverlayCommand { get; private set; }
+
+        private void Overlay()
+        {
+            var viewModel = new OverlayViewModel();
+
+            _overlayDisposable.Disposable = viewModel.Closed
+                .Take(1)
+                .Subscribe(x => viewModel.Dispose());
+
+            _overlayService.Post("Overlay 1", viewModel);
+        }
     }
 }

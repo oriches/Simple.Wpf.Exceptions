@@ -8,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Autofac;
 using Autofac.Core;
-using Autofac.Features.OwnedInstances;
 using NLog;
 using Simple.Wpf.Exceptions.Helpers;
 using Simple.Wpf.Exceptions.Services;
@@ -131,11 +130,15 @@ namespace Simple.Wpf.Exceptions
             _schedulerService.Dispatcher.Schedule<object>(null, (s1, s2) =>
             {
                 var parameters = new Parameter[] { new NamedParameter("exception", exception) };
-                var ownedViewModel = BootStrapper.Resolve<Owned<ExceptionViewModel>>(parameters);
-
-                return _messageService.Post("whoops - something's gone wrong!", ownedViewModel.Value, ownedViewModel)
+                var viewModel = BootStrapper.Resolve<ExceptionViewModel>(parameters);
+                
+                var disposable = viewModel.Closed
                     .Take(1)
                     .Subscribe(x => ownedViewModel.Dispose());
+                
+                _messageService.Post("whoops - something's gone wrong!", viewModel);
+                
+                return disposable;
             });
         }
     }

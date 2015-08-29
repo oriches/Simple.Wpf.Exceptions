@@ -1,5 +1,4 @@
 using System;
-using System.Reactive.Disposables;
 using Moq;
 using NUnit.Framework;
 using Simple.Wpf.Exceptions.Services;
@@ -7,50 +6,28 @@ using Simple.Wpf.Exceptions.ViewModels;
 
 namespace Simple.Wpf.Exceptions.Tests
 {
+    using Models;
+
     [TestFixture]
     public sealed class OverlayServiceFixtures
     {
         [Test]
-        public void posts_overlay_with_lifetime()
+        public void posts_overlay()
         {
             // ARRANGE
-            var contentViewModel = new Mock<BaseViewModel>();
-            var lifetime = Disposable.Empty;
-
-            var service = new OverlayService();
-
-            OverlayViewModel overlayViewModel = null;
-            service.Show.Subscribe(x => overlayViewModel = x);
-
-            // ACT
-            service.Post("header 1", contentViewModel.Object, lifetime);
-
-            // ASSERT
-            Assert.That(overlayViewModel.HasLifetime, Is.True);
-            Assert.That(overlayViewModel.Lifetime, Is.EqualTo(lifetime));
-            Assert.That(overlayViewModel.Header, Is.EqualTo("header 1"));
-            Assert.That(overlayViewModel.ViewModel, Is.EqualTo(contentViewModel.Object));
-        }
-
-        [Test]
-        public void posts_overlay_without_lifetime()
-        {
-            // ARRANGE
-            var contentViewModel = new Mock<BaseViewModel>();
+            var contentViewModel = new Mock<CloseableViewModel>();
             
             var service = new OverlayService();
 
-            OverlayViewModel overlayViewModel = null;
-            service.Show.Subscribe(x => overlayViewModel = x);
+            Message message = null;
+            service.Show.Subscribe(x => message = x);
 
             // ACT
-            service.Post("header 1", contentViewModel.Object, null);
+            service.Post("header 1", contentViewModel.Object);
 
             // ASSERT
-            Assert.That(overlayViewModel.HasLifetime, Is.False);
-            Assert.That(overlayViewModel.Lifetime, Is.Null);
-            Assert.That(overlayViewModel.Header, Is.EqualTo("header 1"));
-            Assert.That(overlayViewModel.ViewModel, Is.EqualTo(contentViewModel.Object));
+            Assert.That(message.Header, Is.EqualTo("header 1"));
+            Assert.That(message.ViewModel, Is.EqualTo(contentViewModel.Object));
         }
 
         [Test]

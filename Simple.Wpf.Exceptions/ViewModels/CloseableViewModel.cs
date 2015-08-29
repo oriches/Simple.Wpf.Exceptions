@@ -43,7 +43,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
             }
         }
 
-        protected void Close()
+        public void Close()
         {
             CloseCommand.Execute(null);
         }

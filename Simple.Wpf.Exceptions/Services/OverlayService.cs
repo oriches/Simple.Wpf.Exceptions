@@ -6,6 +6,8 @@ using Simple.Wpf.Exceptions.ViewModels;
 
 namespace Simple.Wpf.Exceptions.Services
 {
+    using Models;
+
     public sealed class OverlayService : IOverlayService, IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

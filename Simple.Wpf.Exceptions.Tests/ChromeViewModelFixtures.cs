@@ -1,10 +1,10 @@
-using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 using Moq;
 using Microsoft.Reactive.Testing;
 using NUnit.Framework;
 using Simple.Wpf.Exceptions.Extensions;
+using Simple.Wpf.Exceptions.Models;
 using Simple.Wpf.Exceptions.Services;
 using Simple.Wpf.Exceptions.ViewModels;
 
@@ -19,7 +19,7 @@ namespace Simple.Wpf.Exceptions.Tests
         private Mock<IGestureService> _gestureService;
         private Mock<IOverlayService> _overlayService;
 
-        private Subject<OverlayViewModel> _show;
+        private Subject<Message> _messages;
 
         private MainViewModel _mainViewModel;
 
@@ -34,10 +34,10 @@ namespace Simple.Wpf.Exceptions.Tests
             _gestureService = new Mock<IGestureService>();
             _gestureService.Setup(x => x.SetBusy());
 
-            _show = new Subject<OverlayViewModel>();
-            _overlayService.Setup(x => x.Show).Returns(_show);
+            _messages = new Subject<Message>();
+            _overlayService.Setup(x => x.Show).Returns(_messages);
 
-            _mainViewModel = new MainViewModel(_gestureService.Object, _schedulerService);
+            _mainViewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
         }
 
         [Test]
@@ -58,16 +58,16 @@ namespace Simple.Wpf.Exceptions.Tests
         {
             // ARRANGE
             var viewModel = new ChromeViewModel(_mainViewModel, _overlayService.Object);
-            var contentViewModel = new Mock<BaseViewModel>();
-            var overlayViewModel = new OverlayViewModel("header 1", contentViewModel.Object, Disposable.Empty);
+            var overlayViewModel = new OverlayViewModel();
+            var message = new Message("header 1", overlayViewModel);
 
             // ACT
-            _show.OnNext(overlayViewModel);
+            _messages.OnNext(message);
 
             // ASSERT
             Assert.That(viewModel.HasOverlay, Is.True);
             Assert.That(viewModel.OverlayHeader, Is.EqualTo("header 1"));
-            Assert.That(viewModel.Overlay, Is.EqualTo(contentViewModel.Object));
+            Assert.That(viewModel.Overlay, Is.EqualTo(overlayViewModel));
         }
 
         [Test]
@@ -75,10 +75,10 @@ namespace Simple.Wpf.Exceptions.Tests
         {
             // ARRANGE
             var viewModel = new ChromeViewModel(_mainViewModel, _overlayService.Object);
-            var contentViewModel = new Mock<BaseViewModel>();
-            var overlayViewModel = new OverlayViewModel("header 1", contentViewModel.Object, Disposable.Empty);
+            var overlayViewModel = new OverlayViewModel();
+            var message = new Message("header 1", overlayViewModel);
 
-            _show.OnNext(overlayViewModel);
+            _messages.OnNext(message);
 
             // ACT
             viewModel.CloseOverlayCommand.Execute(null);
@@ -95,20 +95,20 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             var viewModel = new ChromeViewModel(_mainViewModel, _overlayService.Object);
 
-            var contentViewModel1 = new Mock<BaseViewModel>();
-            var overlayViewModel1 = new OverlayViewModel("header 1", contentViewModel1.Object, Disposable.Empty);
+            var overlayViewModel1 = new OverlayViewModel();
+            var message1 = new Message("header 1", overlayViewModel1);
 
-            var contentViewModel2 = new Mock<BaseViewModel>();
-            var overlayViewModel2 = new OverlayViewModel("header 2", contentViewModel2.Object, Disposable.Empty);
+            var overlayViewModel2 = new OverlayViewModel();
+            var message2 = new Message("header 2", overlayViewModel2);
 
             // ACT
-            _show.OnNext(overlayViewModel1);
-            _show.OnNext(overlayViewModel2);
+            _messages.OnNext(message1);
+            _messages.OnNext(message2);
 
             // ASSERT
             Assert.That(viewModel.HasOverlay, Is.True);
             Assert.That(viewModel.OverlayHeader, Is.EqualTo("header 2"));
-            Assert.That(viewModel.Overlay, Is.EqualTo(contentViewModel2.Object));
+            Assert.That(viewModel.Overlay, Is.EqualTo(overlayViewModel2));
         }
 
         [Test]

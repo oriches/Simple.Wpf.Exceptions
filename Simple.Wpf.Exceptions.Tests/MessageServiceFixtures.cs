@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Disposables;
 using Moq;
 using NUnit.Framework;
+using Simple.Wpf.Exceptions.Models;
 using Simple.Wpf.Exceptions.Services;
 using Simple.Wpf.Exceptions.ViewModels;
 
@@ -17,21 +17,17 @@ namespace Simple.Wpf.Exceptions.Tests
         {
             // ARRANGE
             var contentViewModel = new Mock<CloseableViewModel>();
-            var lifetime = Disposable.Empty;
-
             var service = new MessageService();
 
-            MessageViewModel messageViewModel = null;
-            service.Show.Subscribe(x => messageViewModel = x);
+            Message message = null;
+            service.Show.Subscribe(x => message = x);
 
             // ACT
-            service.Post("header 1", contentViewModel.Object, lifetime);
+            service.Post("header 1", contentViewModel.Object);
 
             // ASSERT
-            Assert.That(messageViewModel.HasLifetime, Is.True);
-            Assert.That(messageViewModel.Lifetime, Is.EqualTo(lifetime));
-            Assert.That(messageViewModel.Header, Is.EqualTo("header 1"));
-            Assert.That(messageViewModel.ViewModel, Is.EqualTo(contentViewModel.Object));
+            Assert.That(message.Header, Is.EqualTo("header 1"));
+            Assert.That(message.ViewModel, Is.EqualTo(contentViewModel.Object));
         }
 
         [Test]
@@ -42,17 +38,15 @@ namespace Simple.Wpf.Exceptions.Tests
 
             var service = new MessageService();
 
-            MessageViewModel messageViewModel = null;
-            service.Show.Subscribe(x => messageViewModel = x);
+            Message message = null;
+            service.Show.Subscribe(x => message = x);
 
             // ACT
-            service.Post("header 1", contentViewModel.Object, null);
+            service.Post("header 1", contentViewModel.Object);
 
             // ASSERT
-            Assert.That(messageViewModel.HasLifetime, Is.False);
-            Assert.That(messageViewModel.Lifetime, Is.Null);
-            Assert.That(messageViewModel.Header, Is.EqualTo("header 1"));
-            Assert.That(messageViewModel.ViewModel, Is.EqualTo(contentViewModel.Object));
+            Assert.That(message.Header, Is.EqualTo("header 1"));
+            Assert.That(message.ViewModel, Is.EqualTo(contentViewModel.Object));
         }
 
         [Test]
@@ -64,11 +58,11 @@ namespace Simple.Wpf.Exceptions.Tests
 
             var service = new MessageService();
 
-            var messages = new List<MessageViewModel>();
+            var messages = new List<Message>();
             service.Show.Subscribe(x => messages.Add(x));
 
-            service.Post("header 1", contentViewModel1.Object, Disposable.Empty);
-            service.Post("header 2", contentViewModel2.Object, Disposable.Empty);
+            service.Post("header 1", contentViewModel1.Object);
+            service.Post("header 2", contentViewModel2.Object);
 
             // ACT
             messages.First().ViewModel.CloseCommand.Execute(null);

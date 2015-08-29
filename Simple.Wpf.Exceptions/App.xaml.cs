@@ -134,7 +134,7 @@ namespace Simple.Wpf.Exceptions
                 
                 var disposable = viewModel.Closed
                     .Take(1)
-                    .Subscribe(x => ownedViewModel.Dispose());
+                    .Subscribe(x => viewModel.Dispose());
                 
                 _messageService.Post("whoops - something's gone wrong!", viewModel);
                 

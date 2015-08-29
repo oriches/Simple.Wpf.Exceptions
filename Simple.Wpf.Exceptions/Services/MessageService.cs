@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -10,6 +9,8 @@ using Simple.Wpf.Exceptions.ViewModels;
 
 namespace Simple.Wpf.Exceptions.Services
 {
+    using Models;
+
     public sealed class MessageService : IMessageService, IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();

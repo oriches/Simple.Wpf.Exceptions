@@ -18,6 +18,7 @@ namespace Simple.Wpf.Exceptions.Tests
 
         private TestScheduler _testScheduler;
         private ISchedulerService _schedulerService;
+        private Mock<IOverlayService> _overlayService;
 
         [SetUp]
         public void Setup()
@@ -27,6 +28,8 @@ namespace Simple.Wpf.Exceptions.Tests
 
             _gestureService = new Mock<IGestureService>();
             _gestureService.Setup(x => x.SetBusy());
+
+            _overlayService = new Mock<IOverlayService>();
         }
 
         [Test]
@@ -36,7 +39,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var exceptionText = "This is the exception message!";
             var expectedResult = "This is the exception message! - thrown from UI thread.";
 
-            var viewModel = new MainViewModel(_gestureService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
 
             // ACT
             Exception thrownException = null;
@@ -61,7 +64,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var exceptionText = "This is the exception message!";
             var expectedResult = "This is the exception message! - thrown from Task StartNew.";
 
-            var viewModel = new MainViewModel(_gestureService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
 
             Exception thrownException = null;
             TaskScheduler.UnobservedTaskException += (s, e) =>
@@ -90,7 +93,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var exceptionText = "This is the exception message!";
             var expectedResult = "This is the exception message! - thrown from Rx Start.";
 
-            var viewModel = new MainViewModel(_gestureService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
 
             Exception thrownException = null;
 
@@ -111,11 +114,26 @@ namespace Simple.Wpf.Exceptions.Tests
             Assert.That(thrownException.Message, Is.EqualTo(expectedResult));
         }
 
+         [Test]
+        public void shows_overlay()
+        {
+            // ARRANGE
+             _overlayService.Setup(x => x.Post(It.IsAny<string>(), It.IsAny<CloseableViewModel>())).Verifiable();
+
+            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
+
+            // ACT
+            viewModel.OverlayCommand.Execute(null);
+
+            // ASSERT
+            _overlayService.VerifyAll();
+        }
+
         [Test]
         public void disposing_clears_commands()
         {
             // ARRANGE
-            var viewModel = new MainViewModel(_gestureService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
 
             // ACT
             viewModel.Dispose();

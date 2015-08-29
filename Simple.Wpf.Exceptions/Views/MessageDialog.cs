@@ -4,19 +4,21 @@ using Simple.Wpf.Exceptions.ViewModels;
 
 namespace Simple.Wpf.Exceptions.Views
 {
+    using Models;
+
     [ContentProperty("DialogBody")]
     public sealed class MessageDialog : BaseMetroDialog
     {
-        private readonly MessageViewModel _viewModel;
+        private readonly Message _message;
 
-        public MessageDialog(MessageViewModel viewModel)
+        public MessageDialog(Message message)
         {
-            _viewModel = viewModel;
+            _message = message;
 
-            Title = _viewModel.Header;
-            Content = _viewModel.ViewModel;
+            Title = _message.Header;
+            Content = _message.ViewModel;
         }
 
-        public CloseableViewModel CloseableContent { get { return _viewModel.ViewModel; } }
+        public CloseableViewModel CloseableContent { get { return _message.ViewModel; } }
     }
 }

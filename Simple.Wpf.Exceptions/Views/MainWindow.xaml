@@ -19,8 +19,7 @@
                        Width="400"
                        CloseCommand="{Binding Path=CloseOverlayCommand, Mode=OneWay}"
                        Content="{Binding Path=Overlay, Mode=OneWay}"
-                       Visibility="{Binding Path=HasOverlay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            </mh:Flyout>
+                       Visibility="{Binding Path=HasOverlay, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         </mh:FlyoutsControl>
     </mh:MetroWindow.Flyouts>

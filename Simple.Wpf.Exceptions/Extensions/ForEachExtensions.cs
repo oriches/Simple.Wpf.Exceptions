@@ -5,14 +5,14 @@ namespace Simple.Wpf.Exceptions.Extensions
 {
     public static class ForEachExtensions
     {
-        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (var i in collection)
+            foreach (var i in enumerable)
             {
                 action(i);
             }
 
-            return collection;
+            return enumerable;
         }
     }
 }

@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using NLog;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reactive.Disposables;
+    using System.Reactive.Linq;
+    using System.Reactive.Subjects;
+    using Extensions;
     using Models;
+    using ViewModels;
 
-    public sealed class MessageService : IMessageService, IDisposable
+    public sealed class MessageService : BaseService, IMessageService
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        private readonly IDisposable _disposable;
         private readonly Subject<Message> _show;
         private readonly Queue<Message> _waitingMessages = new Queue<Message>();
 		
@@ -23,26 +19,13 @@ namespace Simple.Wpf.Exceptions.Services
 
         public MessageService()
         {
-            _show = new Subject<Message>();
+            _show = new Subject<Message>()
+                .DisposeWith(this);
 
-            _disposable = Disposable.Create(() =>
-            {
-                _waitingMessages.Clear();
-
-                _show.OnCompleted();
-                _show.Dispose();
-            });
+            Add(Disposable.Create(() => _waitingMessages.Clear()));
         }
 
-        public void Dispose()
-        {
-            using (Duration.Measure(Logger, "Dispose"))
-            {
-                _disposable.Dispose();
-            }
-        }
-
-        public void Post(string header, CloseableViewModel viewModel)
+        public void Post(string header, ICloseableViewModel viewModel)
         {
             var newMessage = new Message(header, viewModel);
 			
@@ -80,6 +63,6 @@ namespace Simple.Wpf.Exceptions.Services
             }
         }
 
-        public IObservable<Message> Show { get { return _show; } }
+        public IObservable<Message> Show => _show;
     }
 }

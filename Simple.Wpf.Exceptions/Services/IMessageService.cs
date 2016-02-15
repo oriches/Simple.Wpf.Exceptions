@@ -9,6 +9,6 @@ namespace Simple.Wpf.Exceptions.Services
     {
         IObservable<Message> Show { get; }
 
-        void Post(string header, CloseableViewModel viewModel);
+        void Post(string header, ICloseableViewModel viewModel);
     }
 }

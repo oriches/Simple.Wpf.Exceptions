@@ -9,9 +9,9 @@ namespace Simple.Wpf.Exceptions
     public static class BootStrapper
     {
         private static ILifetimeScope _rootScope;
-        private static ChromeViewModel _chromeViewModel;
+        private static IChromeViewModel _chromeViewModel;
 
-        public static BaseViewModel RootVisual
+        public static IViewModel RootVisual
         {
             get
             {
@@ -20,7 +20,7 @@ namespace Simple.Wpf.Exceptions
                     Start();
                 }
 
-                _chromeViewModel = _rootScope.Resolve<ChromeViewModel>();
+                _chromeViewModel = _rootScope.Resolve<IChromeViewModel>();
                 return _chromeViewModel;
             }
         }
@@ -41,8 +41,9 @@ namespace Simple.Wpf.Exceptions
                 .AsImplementedInterfaces();
             
             builder.RegisterAssemblyTypes(assembly)
-                .Where(t => t.Name.EndsWith("ViewModel"));
-            
+                .Where(t => t.Name.EndsWith("ViewModel"))
+                .AsImplementedInterfaces();
+
             _rootScope = builder.Build();
         }
 

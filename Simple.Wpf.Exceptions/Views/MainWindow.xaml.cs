@@ -1,13 +1,13 @@
-using System;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
-using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
-using Simple.Wpf.Exceptions.Services;
-
 namespace Simple.Wpf.Exceptions.Views
 {
+    using System;
+    using System.Reactive;
+    using System.Reactive.Linq;
+    using System.Reactive.Threading.Tasks;
+    using MahApps.Metro.Controls;
+    using MahApps.Metro.Controls.Dialogs;
+    using Services;
+
     public partial class MainWindow : MetroWindow
     {
         private readonly IDisposable _disposable;
@@ -38,7 +38,7 @@ namespace Simple.Wpf.Exceptions.Views
             {
                 AnimateShow = true,
                 AnimateHide = true,
-                ColorScheme = MetroDialogColorScheme.Inverted
+                ColorScheme = MetroDialogColorScheme.Accented
             };
 
             return this.ShowMetroDialogAsync(dialog, settings)

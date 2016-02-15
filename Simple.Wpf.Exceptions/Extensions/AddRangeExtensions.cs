@@ -4,11 +4,11 @@ namespace Simple.Wpf.Exceptions.Extensions
 {
     public static class AddRangeExtensions
     {
-        public static void AddRange<T>(this ICollection<T> oc, IEnumerable<T> collection)
+        public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> enumerable)
         {
-            foreach (var item in collection)
+            foreach (var item in enumerable)
             {
-                oc.Add(item);
+                collection.Add(item);
             }
         }
     }

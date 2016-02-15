@@ -1,44 +1,29 @@
-using System;
-using System.Reactive.Disposables;
-using System.Reactive.Subjects;
-using NLog;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Services
 {
-    using Models;
+    using System;
+    using System.Reactive.Subjects;
+    using Exceptions;
+    using Extensions;
+    using ViewModels;
 
-    public sealed class OverlayService : IOverlayService, IDisposable
+    public sealed class OverlayService : BaseService, IOverlayService
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly Subject<OverlayViewModel> _show;
 
-        private readonly IDisposable _disposable;
-        private readonly Subject<Message> _show;
-        
         public OverlayService()
         {
-            _show = new Subject<Message>();
-
-            _disposable = Disposable.Create(() =>
+            using (Duration.Measure(Logger, "Constructor - " + GetType().Name))
             {
-                _show.OnCompleted();
-                _show.Dispose();
-            });
-        }
-        
-        public void Dispose()
-        {
-            using (Duration.Measure(Logger, "Dispose"))
-            {
-                _disposable.Dispose();
+                _show = new Subject<OverlayViewModel>()
+                    .DisposeWith(this);
             }
         }
 
-        public void Post(string header, CloseableViewModel viewModel)
+        public void Post(string header, BaseViewModel viewModel, IDisposable lifetime)
         {
-            _show.OnNext(new Message(header, viewModel));
+            _show.OnNext(new OverlayViewModel(header, viewModel, lifetime));
         }
 
-        public IObservable<Message> Show { get { return _show; } }
+        public IObservable<OverlayViewModel> Show => _show;
     }
 }

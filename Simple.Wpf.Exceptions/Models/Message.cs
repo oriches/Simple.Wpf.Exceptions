@@ -4,7 +4,7 @@ namespace Simple.Wpf.Exceptions.Models
 {
     public sealed class Message
     {
-        public Message(string header, CloseableViewModel viewModel)
+        public Message(string header, ICloseableViewModel viewModel)
         {
             Header = header;
             ViewModel = viewModel;
@@ -12,6 +12,6 @@ namespace Simple.Wpf.Exceptions.Models
 
         public string Header { get; private set; }
 
-        public CloseableViewModel ViewModel { get; private set; }
+        public ICloseableViewModel ViewModel { get; private set; }
     }
 }

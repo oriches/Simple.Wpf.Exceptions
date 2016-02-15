@@ -5,7 +5,9 @@ using System.Windows.Threading;
 
 namespace Simple.Wpf.Exceptions.Services
 {
-    public sealed class GesturesService : IGestureService, IDisposable
+    using System.Reactive.Disposables;
+
+    public sealed class GesturesService : BaseService, IGestureService
     {
         private readonly DispatcherTimer _timer;
         private bool _isBusy;
@@ -14,11 +16,8 @@ namespace Simple.Wpf.Exceptions.Services
         {
             _timer = new DispatcherTimer(TimeSpan.Zero, DispatcherPriority.ApplicationIdle, TimerCallback, Application.Current.Dispatcher);
             _timer.Stop();
-        }
 
-        public void Dispose()
-        {
-            _timer.Stop();
+            Add(Disposable.Create(() => _timer.Stop()));
         }
 
         public void SetBusy()

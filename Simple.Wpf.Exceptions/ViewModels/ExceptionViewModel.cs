@@ -1,85 +1,74 @@
-using System;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Windows.Input;
-using NLog;
-using Simple.Wpf.Exceptions.Commands;
-using Simple.Wpf.Exceptions.Services;
-
 namespace Simple.Wpf.Exceptions.ViewModels
 {
-    public sealed class ExceptionViewModel : CloseableViewModel
+    using System;
+    using System.Reactive.Linq;
+    using Commands;
+    using Extensions;
+    using Services;
+
+    public sealed class ExceptionViewModel : CloseableViewModel, IExceptionViewModel
     {
         private readonly Exception _exception;
         private readonly IApplicationService _applicationService;
-        private readonly IGestureService _gestureService;
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IDisposable _disposable;
-
-        public ExceptionViewModel(Exception exception, IApplicationService applicationService, IGestureService gestureService)
+        public ExceptionViewModel(Exception exception, IApplicationService applicationService)
         {
             _exception = exception;
             _applicationService = applicationService;
-            _gestureService = gestureService;
 
-            CopyCommand = new RelayCommand(Copy, CanCopy);
-            OpenLogFolderCommand = new RelayCommand(OpenLogFolder, CanOpenLogFolder);
-            ContinueCommand = new RelayCommand(Continue);
-            ExitCommand = new RelayCommand(Exit);
-            RestartCommand = new RelayCommand(Restart);
+            OpenLogFolderCommand = ReactiveCommand.Create(Observable.Return(_applicationService.LogFolder != null));
+            CopyCommand = ReactiveCommand.Create(Observable.Return(exception != null));
+            ContinueCommand = ReactiveCommand.Create();
+            ExitCommand = ReactiveCommand.Create();
+            RestartCommand = ReactiveCommand.Create();
 
-            var closedDisposable = Closed.Take(1).Subscribe(x =>
-            {
-                // Force all other potential exceptions to be realized
-                // from the Finalizer thread to surface to the UI
-                GC.Collect(2, GCCollectionMode.Forced);
-                GC.WaitForPendingFinalizers();
-            });
+            OpenLogFolderCommand.ActivateGestures()
+               .Subscribe(x => OpenLogFolder())
+               .DisposeWith(this);
 
-            _disposable = Disposable.Create(() =>
-            {
-                closedDisposable.Dispose();
+            CopyCommand.ActivateGestures()
+                .Subscribe(x => Copy())
+                .DisposeWith(this);
 
-                CopyCommand = null;
-                OpenLogFolderCommand = null;
-                ContinueCommand = null;
-                ExitCommand = null;
-                RestartCommand = null;
-            });
+            ContinueCommand.ActivateGestures()
+                .Subscribe(x => Continue())
+                .DisposeWith(this);
+
+            ExitCommand
+                .ActivateGestures()
+                .Subscribe(x => Exit())
+                .DisposeWith(this);
+
+            RestartCommand
+                .ActivateGestures()
+                .Subscribe(x => Restart())
+                .DisposeWith(this);
+
+            Closed.Take(1)
+                .Subscribe(x =>
+                           {
+                               // Force all other potential exceptions to be realized
+                               // from the Finalizer thread to surface to the UI
+                               GC.Collect(2, GCCollectionMode.Forced);
+                               GC.WaitForPendingFinalizers();
+                           })
+                .DisposeWith(this);
         }
 
-        public override void Dispose()
-        {
-            using (Duration.Measure(Logger, "Dispose"))
-            {
-                base.Dispose();
+        public ReactiveCommand<object> CopyCommand { get; }
 
-                _disposable.Dispose();
-            }
-        }
+        public ReactiveCommand<object> OpenLogFolderCommand { get; }
 
-        public ICommand CopyCommand { get; private set; }
+        public ReactiveCommand<object> ContinueCommand { get; }
 
-        public ICommand OpenLogFolderCommand { get; private set; }
+        public ReactiveCommand<object> ExitCommand { get; }
 
-        public ICommand ContinueCommand { get; private set; }
+        public ReactiveCommand<object> RestartCommand { get; }
 
-        public ICommand ExitCommand { get; private set; }
-
-        public ICommand RestartCommand { get; private set; }
-
-        public string Message { get { return _exception != null ? _exception.Message : null; } }
-
-        private bool CanCopy()
-        {
-            return _exception != null;
-        }
+        public string Message => _exception?.Message;
 
         private void Copy()
         {
-            _gestureService.SetBusy();
-
             _applicationService.CopyToClipboard(_exception.ToString());
         }
 
@@ -90,30 +79,31 @@ namespace Simple.Wpf.Exceptions.ViewModels
 
         private void OpenLogFolder()
         {
-            _gestureService.SetBusy();
-
             _applicationService.OpenFolder(_applicationService.LogFolder);
         }
 
         private void Exit()
         {
-            _gestureService.SetBusy();
-
             _applicationService.Exit();
         }
 
         private void Restart()
         {
-            _gestureService.SetBusy();
-
             _applicationService.Restart();
         }
 
         private void Continue()
         {
-            _gestureService.SetBusy();
+            ConfirmCommand.Execute(null);
+        }
 
-            Close();
+        protected override void InitialiseConfirmAndDeny()
+        {
+           ConfirmCommand = ReactiveCommand.Create()
+              .DisposeWith(this);
+
+            DenyCommand = ReactiveCommand.Create()
+             .DisposeWith(this);
         }
     }
 }

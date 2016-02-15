@@ -1,14 +1,12 @@
-using System;
-
 namespace Simple.Wpf.Exceptions.Services
 {
-    using Models;
+    using System;
     using ViewModels;
 
     public interface IOverlayService
     {
-        IObservable<Message> Show { get; }
+        IObservable<OverlayViewModel> Show { get; }
 
-        void Post(string header, CloseableViewModel viewModel);
+        void Post(string header, BaseViewModel viewModel, IDisposable lifetime);
     }
 }

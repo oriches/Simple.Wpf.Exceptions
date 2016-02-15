@@ -1,16 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using System.Reactive.Disposables;
-using Simple.Wpf.Exceptions.Extensions;
-using Simple.Wpf.Exceptions.Helpers;
-
 namespace Simple.Wpf.Exceptions.ViewModels
 {
-    public abstract class BaseViewModel : INotifyPropertyChanged
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Linq.Expressions;
+    using System.Reactive.Disposables;
+    using Extensions;
+    using Helpers;
+    using NLog;
+
+    public abstract class BaseViewModel : IViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private sealed class SuspendedNotifications : IDisposable
         {
@@ -50,7 +53,25 @@ namespace Simple.Wpf.Exceptions.ViewModels
         private static readonly PropertyChangedEventArgs EmptyChangeArgs = new PropertyChangedEventArgs(string.Empty);
         private static readonly IDictionary<string, PropertyChangedEventArgs> ChangedProperties = new Dictionary<string, PropertyChangedEventArgs>();
 
+        private readonly CompositeDisposable _disposable;
+
         private SuspendedNotifications _suspendedNotifications;
+
+        protected BaseViewModel()
+        {
+            _disposable = new CompositeDisposable();
+        }
+
+        public virtual void Dispose()
+        {
+            using (Duration.Measure(Logger, "Dispose - " + GetType().Name))
+                _disposable.Dispose();
+        }
+
+        public void Add(IDisposable dispsoable)
+        {
+            _disposable.Add(dispsoable);
+        }
 
         public IDisposable SuspendNotifications()
         {

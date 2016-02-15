@@ -1,24 +1,19 @@
-using System;
-using System.Windows.Input;
-using System.Threading;
-using System.Threading.Tasks;
-using Moq;
-using Microsoft.Reactive.Testing;
-using NUnit.Framework;
-using Simple.Wpf.Exceptions.Extensions;
-using Simple.Wpf.Exceptions.Services;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Tests
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Reactive.Testing;
+    using Moq;
+    using NUnit.Framework;
+    using Services;
+    using ViewModels;
+
     [TestFixture]
     public sealed class MainViewModelFixtures
     {
-        private Mock<IGestureService> _gestureService;
-
         private TestScheduler _testScheduler;
         private ISchedulerService _schedulerService;
-        private Mock<IOverlayService> _overlayService;
 
         [SetUp]
         public void Setup()
@@ -26,10 +21,10 @@ namespace Simple.Wpf.Exceptions.Tests
             _testScheduler = new TestScheduler();
             _schedulerService = new MockSchedulerService(_testScheduler);
 
-            _gestureService = new Mock<IGestureService>();
-            _gestureService.Setup(x => x.SetBusy());
+            var gestureService = new Mock<IGestureService>();
+            gestureService.Setup(x => x.SetBusy());
 
-            _overlayService = new Mock<IOverlayService>();
+            Extensions.ObservableExtensions.GestureService = gestureService.Object;
         }
 
         [Test]
@@ -39,13 +34,15 @@ namespace Simple.Wpf.Exceptions.Tests
             var exceptionText = "This is the exception message!";
             var expectedResult = "This is the exception message! - thrown from UI thread.";
 
-            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_schedulerService);
 
             // ACT
             Exception thrownException = null;
             try
             {
                 viewModel.ThrowFromUiThreadCommand.Execute(exceptionText);
+
+                _testScheduler.AdvanceBy(TimeSpan.FromMilliseconds(100));
             }
             catch (Exception exn)
             {
@@ -64,7 +61,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var exceptionText = "This is the exception message!";
             var expectedResult = "This is the exception message! - thrown from Task StartNew.";
 
-            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_schedulerService);
 
             Exception thrownException = null;
             TaskScheduler.UnobservedTaskException += (s, e) =>
@@ -93,7 +90,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var exceptionText = "This is the exception message!";
             var expectedResult = "This is the exception message! - thrown from Rx Start.";
 
-            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
+            var viewModel = new MainViewModel(_schedulerService);
 
             Exception thrownException = null;
 
@@ -112,35 +109,6 @@ namespace Simple.Wpf.Exceptions.Tests
             // ASSERT
             Assert.That(thrownException, Is.Not.Null);
             Assert.That(thrownException.Message, Is.EqualTo(expectedResult));
-        }
-
-         [Test]
-        public void shows_overlay()
-        {
-            // ARRANGE
-             _overlayService.Setup(x => x.Post(It.IsAny<string>(), It.IsAny<CloseableViewModel>())).Verifiable();
-
-            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
-
-            // ACT
-            viewModel.OverlayCommand.Execute(null);
-
-            // ASSERT
-            _overlayService.VerifyAll();
-        }
-
-        [Test]
-        public void disposing_clears_commands()
-        {
-            // ARRANGE
-            var viewModel = new MainViewModel(_gestureService.Object, _overlayService.Object, _schedulerService);
-
-            // ACT
-            viewModel.Dispose();
-
-            // ASSERT
-            var commandProperties = TestHelper.PropertiesImplementingInterface<ICommand>(viewModel);
-            commandProperties.ForEach(x => Assert.That(x.GetValue(viewModel, null), Is.Null));
         }
     }
 }

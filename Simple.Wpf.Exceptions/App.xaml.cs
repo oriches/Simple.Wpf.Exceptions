@@ -51,6 +51,7 @@ namespace Simple.Wpf.Exceptions
 
             _messageService = BootStrapper.Resolve<IMessageService>();
             _schedulerService = BootStrapper.Resolve<ISchedulerService>();
+            Exceptions.Extensions.ObservableExtensions.GestureService = BootStrapper.Resolve<IGestureService>();
 
             var window = new MainWindow(_messageService, _schedulerService);
 
@@ -130,7 +131,7 @@ namespace Simple.Wpf.Exceptions
             _schedulerService.Dispatcher.Schedule<object>(null, (s1, s2) =>
             {
                 var parameters = new Parameter[] { new NamedParameter("exception", exception) };
-                var viewModel = BootStrapper.Resolve<ExceptionViewModel>(parameters);
+                var viewModel = BootStrapper.Resolve<IExceptionViewModel>(parameters);
                 
                 var disposable = viewModel.Closed
                     .Take(1)

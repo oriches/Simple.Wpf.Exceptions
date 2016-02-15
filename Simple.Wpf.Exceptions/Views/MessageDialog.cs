@@ -19,6 +19,6 @@ namespace Simple.Wpf.Exceptions.Views
             Content = _message.ViewModel;
         }
 
-        public CloseableViewModel CloseableContent { get { return _message.ViewModel; } }
+        public ICloseableViewModel CloseableContent => _message.ViewModel;
     }
 }

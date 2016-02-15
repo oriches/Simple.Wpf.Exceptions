@@ -1,18 +1,14 @@
-using System;
-using System.Windows.Input;
-using Moq;
-using NUnit.Framework;
-using Simple.Wpf.Exceptions.Extensions;
-using Simple.Wpf.Exceptions.Services;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Tests
 {
+    using System;
+    using Moq;
+    using NUnit.Framework;
+    using Services;
+    using ViewModels;
+
     [TestFixture]
     public sealed class ExceptionViewModelFixtures
     {
-
-        private Mock<IGestureService> _gestureService;
         private Mock<IApplicationService> _applicationService;
 
         [SetUp]
@@ -20,8 +16,10 @@ namespace Simple.Wpf.Exceptions.Tests
         {
             _applicationService = new Mock<IApplicationService>();
 
-            _gestureService = new Mock<IGestureService>();
-            _gestureService.Setup(x => x.SetBusy());
+            var gestureService = new Mock<IGestureService>();
+            gestureService.Setup(x => x.SetBusy());
+
+            Extensions.ObservableExtensions.GestureService = gestureService.Object;
         }
 
         [Test]
@@ -29,7 +27,7 @@ namespace Simple.Wpf.Exceptions.Tests
         {
             // ARRANGE
             // ACT
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ASSERT
             Assert.That(viewModel.Message, Is.Null);
@@ -43,7 +41,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var exception = new Exception(message);
             
             // ACT
-            var viewModel = new ExceptionViewModel(exception, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(exception, _applicationService.Object);
 
             // ASSERT
             Assert.That(viewModel.Message, Is.EqualTo(message));
@@ -53,7 +51,7 @@ namespace Simple.Wpf.Exceptions.Tests
         public void can_not_copy_exception_to_clipboard_when_exception_is_null()
         {
             // ARRANGE
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             var canExecute = viewModel.CopyCommand.CanExecute(null);
@@ -69,7 +67,7 @@ namespace Simple.Wpf.Exceptions.Tests
             var message = "This is the message";
             var exception = new Exception(message);
 
-            var viewModel = new ExceptionViewModel(exception, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(exception, _applicationService.Object);
 
             // ACT
             var canExecute = viewModel.CopyCommand.CanExecute(null);
@@ -87,7 +85,7 @@ namespace Simple.Wpf.Exceptions.Tests
 
             _applicationService.Setup(x => x.CopyToClipboard(exception.ToString()));
 
-            var viewModel = new ExceptionViewModel(exception, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(exception, _applicationService.Object);
 
             // ACT
             viewModel.CopyCommand.Execute(null);
@@ -102,7 +100,7 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             _applicationService.SetupGet<string>(x => x.LogFolder).Returns((string)null);
 
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             var canExecute = viewModel.OpenLogFolderCommand.CanExecute(null);
@@ -117,7 +115,7 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             _applicationService.SetupGet<string>(x => x.LogFolder).Returns(@"c:\temp\log.txt");
 
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             var canExecute = viewModel.OpenLogFolderCommand.CanExecute(null);
@@ -133,7 +131,7 @@ namespace Simple.Wpf.Exceptions.Tests
             _applicationService.SetupGet(x => x.LogFolder).Returns(@"c:\temp\log.txt");
             _applicationService.Setup(x => x.OpenFolder(@"c:\temp\log.txt"));
 
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             viewModel.OpenLogFolderCommand.Execute(null);
@@ -148,7 +146,7 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             _applicationService.Setup(x => x.Exit());
 
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             viewModel.ExitCommand.Execute(null);
@@ -163,7 +161,7 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             _applicationService.Setup(x => x.Exit());
 
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             viewModel.RestartCommand.Execute(null);
@@ -178,28 +176,13 @@ namespace Simple.Wpf.Exceptions.Tests
             // ARRANGE
             _applicationService.Setup(x => x.Exit());
 
-            var viewModel = new ExceptionViewModel(null, _applicationService.Object, _gestureService.Object);
+            var viewModel = new ExceptionViewModel(null, _applicationService.Object);
 
             // ACT
             viewModel.ContinueCommand.Execute(null);
 
             // ASSERT
             _applicationService.Verify();
-        }
-        
-        [Test]
-        public void disposing_clears_commands()
-        {
-            // ARRANGE
-            var exception = new Exception();
-            var viewModel = new ExceptionViewModel(exception, _applicationService.Object, _gestureService.Object);
-
-            // ACT
-            viewModel.Dispose();
-
-            // ASSERT
-            var commandProperties = TestHelper.PropertiesImplementingInterface<ICommand>(viewModel);
-            commandProperties.ForEach(x => Assert.That(x.GetValue(viewModel, null), Is.Null));
         }
     }
 }

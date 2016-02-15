@@ -9,6 +9,9 @@ using Simple.Wpf.Exceptions.ViewModels;
 
 namespace Simple.Wpf.Exceptions.Tests
 {
+    using System.Reactive;
+    using System.Reactive.Subjects;
+
     [TestFixture]
     public sealed class MessageServiceFixtures
     {
@@ -16,7 +19,10 @@ namespace Simple.Wpf.Exceptions.Tests
         public void posts_message_with_lifetime()
         {
             // ARRANGE
-            var contentViewModel = new Mock<CloseableViewModel>();
+            var closed = new Subject<Unit>();
+            var contentViewModel = new Mock<ICloseableViewModel>();
+            contentViewModel.Setup(x => x.Closed).Returns(closed);
+
             var service = new MessageService();
 
             Message message = null;
@@ -34,7 +40,9 @@ namespace Simple.Wpf.Exceptions.Tests
         public void posts_message_without_lifetime()
         {
             // ARRANGE
-            var contentViewModel = new Mock<CloseableViewModel>();
+            var closed = new Subject<Unit>();
+            var contentViewModel = new Mock<ICloseableViewModel>();
+            contentViewModel.Setup(x => x.Closed).Returns(closed);
 
             var service = new MessageService();
 
@@ -53,8 +61,13 @@ namespace Simple.Wpf.Exceptions.Tests
         public void posts_mulitple_messages()
         {
             // ARRANGE
-            var contentViewModel1 = new Mock<CloseableViewModel>();
-            var contentViewModel2 = new Mock<CloseableViewModel>();
+            var closed1 = new Subject<Unit>();
+            var contentViewModel1 = new Mock<ICloseableViewModel>();
+            contentViewModel1.Setup(x => x.Closed).Returns(closed1);
+
+            var closed2 = new Subject<Unit>();
+            var contentViewModel2 = new Mock<ICloseableViewModel>();
+            contentViewModel2.Setup(x => x.Closed).Returns(closed2);
 
             var service = new MessageService();
 
@@ -65,27 +78,11 @@ namespace Simple.Wpf.Exceptions.Tests
             service.Post("header 2", contentViewModel2.Object);
 
             // ACT
-            messages.First().ViewModel.CloseCommand.Execute(null);
+            closed1.OnNext(Unit.Default);
 
             // ASSERT
             Assert.That(messages.Count(x => x.Header == "header 1") == 1, Is.True);
             Assert.That(messages.Count(x => x.Header == "header 2") == 1, Is.True);
-        }
-
-        [Test]
-        public void disposing_completes_show_stream()
-        {
-            // ARRANGE
-            var completed = false;
-
-            var service = new MessageService();
-            service.Show.Subscribe(x => { }, () => { completed = true; });
-
-            // ACT
-            service.Dispose();
-
-            // ASSERT
-            Assert.That(completed, Is.True);
         }
     }
 }

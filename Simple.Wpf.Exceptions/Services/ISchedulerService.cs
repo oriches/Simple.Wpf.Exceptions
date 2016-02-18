@@ -1,7 +1,7 @@
-using System.Reactive.Concurrency;
-
 namespace Simple.Wpf.Exceptions.Services
 {
+    using System.Reactive.Concurrency;
+
     public interface ISchedulerService
     {
         IScheduler Dispatcher { get; }

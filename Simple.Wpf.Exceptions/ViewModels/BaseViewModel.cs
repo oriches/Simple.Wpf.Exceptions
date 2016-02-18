@@ -8,7 +8,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
     using Extensions;
     using Helpers;
     using Models;
-    using NLog;
 
     public abstract class BaseViewModel : DisposableObject, IViewModel
     {

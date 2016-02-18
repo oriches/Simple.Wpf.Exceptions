@@ -1,21 +1,22 @@
-using System;
-using System.Diagnostics;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Threading;
-using Autofac;
-using Autofac.Core;
-using NLog;
-using Simple.Wpf.Exceptions.Helpers;
-using Simple.Wpf.Exceptions.Services;
-using Simple.Wpf.Exceptions.ViewModels;
-using Simple.Wpf.Exceptions.Views;
-
 namespace Simple.Wpf.Exceptions
 {
+    using System;
+    using System.Diagnostics;
+    using System.Reactive.Concurrency;
+    using System.Reactive.Disposables;
+    using System.Reactive.Linq;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Media;
+    using System.Windows.Threading;
+    using Autofac;
+    using Autofac.Core;
+    using Helpers;
+    using NLog;
+    using Services;
+    using ViewModels;
+    using Views;
+
     public partial class App : Application
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
@@ -128,18 +129,16 @@ namespace Simple.Wpf.Exceptions
         {
             Logger.Error(exception);
 
-            _schedulerService.Dispatcher.Schedule<object>(null, (s1, s2) =>
+            _schedulerService.Dispatcher.Schedule(() =>
             {
                 var parameters = new Parameter[] { new NamedParameter("exception", exception) };
                 var viewModel = BootStrapper.Resolve<IExceptionViewModel>(parameters);
                 
-                var disposable = viewModel.Closed
+                viewModel.Closed
                     .Take(1)
                     .Subscribe(x => viewModel.Dispose());
                 
                 _messageService.Post("whoops - something's gone wrong!", viewModel);
-                
-                return disposable;
             });
         }
     }

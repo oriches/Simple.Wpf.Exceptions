@@ -1,8 +1,7 @@
-using System.Windows;
-using System.Linq;
-
 namespace Simple.Wpf.Exceptions.Services
 {
+    using System.Linq;
+    using System.Windows;
     using NLog;
     using NLog.Targets;
 

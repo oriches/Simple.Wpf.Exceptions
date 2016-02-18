@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using NLog;
-using Simple.Wpf.Exceptions.Extensions;
-
 namespace Simple.Wpf.Exceptions.Helpers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Extensions;
+    using NLog;
+
     public static class LogHelper
     {
         private static readonly IEnumerable<LogLevel> AllLevels = new[]

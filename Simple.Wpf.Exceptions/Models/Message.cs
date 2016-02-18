@@ -1,7 +1,7 @@
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Models
 {
+    using ViewModels;
+
     public sealed class Message
     {
         public Message(string header, ICloseableViewModel viewModel)

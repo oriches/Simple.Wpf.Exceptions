@@ -1,9 +1,9 @@
-using System;
-using System.Reactive.Concurrency;
-using System.Threading;
-
 namespace Simple.Wpf.Exceptions.Services
 {
+    using System;
+    using System.Reactive.Concurrency;
+    using System.Threading;
+
     public sealed class SchedulerService : ISchedulerService
     {
         private readonly DispatcherScheduler _dispatcherScheduler;

@@ -1,10 +1,9 @@
-using System.Windows.Markup;
-using MahApps.Metro.Controls.Dialogs;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Views
 {
+    using System.Windows.Markup;
+    using MahApps.Metro.Controls.Dialogs;
     using Models;
+    using ViewModels;
 
     [ContentProperty("DialogBody")]
     public sealed class MessageDialog : BaseMetroDialog

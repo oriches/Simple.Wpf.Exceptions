@@ -1,11 +1,11 @@
-using System;
-using System.Globalization;
-using System.Text;
-using NLog;
-using NLog.LayoutRenderers;
-
 namespace Simple.Wpf.Exceptions
 {
+    using System;
+    using System.Globalization;
+    using System.Text;
+    using NLog;
+    using NLog.LayoutRenderers;
+
     [LayoutRenderer("formatted_threadid")]
     public sealed class NLogFormattedThreadIdLayoutRenderer : LayoutRenderer
     {

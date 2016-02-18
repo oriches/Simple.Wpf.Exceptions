@@ -1,11 +1,11 @@
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Reactive.Disposables;
-using NLog;
-
 namespace Simple.Wpf.Exceptions
 {
+    using System;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Reactive.Disposables;
+    using NLog;
+
     public sealed class Duration : IDisposable
     {
         private readonly string _context;
@@ -40,7 +40,7 @@ namespace Simple.Wpf.Exceptions
         {
             _stopWatch.Stop();
 
-            _logger.Debug(string.Format(CultureInfo.InvariantCulture, "{0}, duration = {1} ms", _context, _stopWatch.ElapsedMilliseconds));
+            _logger.Debug(CultureInfo.InvariantCulture, "{0}, duration = {1} ms", _context, _stopWatch.ElapsedMilliseconds);
         }
     }
 }

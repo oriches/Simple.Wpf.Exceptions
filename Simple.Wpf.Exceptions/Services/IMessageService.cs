@@ -1,9 +1,8 @@
-using System;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions.Services
 {
+    using System;
     using Models;
+    using ViewModels;
 
     public interface IMessageService
     {

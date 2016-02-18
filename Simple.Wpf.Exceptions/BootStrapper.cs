@@ -1,11 +1,11 @@
-using System;
-using System.Reflection;
-using Autofac;
-using Autofac.Core;
-using Simple.Wpf.Exceptions.ViewModels;
-
 namespace Simple.Wpf.Exceptions
 {
+    using System;
+    using System.Reflection;
+    using Autofac;
+    using Autofac.Core;
+    using ViewModels;
+
     public static class BootStrapper
     {
         private static ILifetimeScope _rootScope;

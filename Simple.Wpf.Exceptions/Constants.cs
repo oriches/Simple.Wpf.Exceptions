@@ -1,7 +1,7 @@
-using System;
-
 namespace Simple.Wpf.Exceptions
 {
+    using System;
+
     public static class Constants
     {
         public static readonly TimeSpan Heartbeat = TimeSpan.FromSeconds(5);

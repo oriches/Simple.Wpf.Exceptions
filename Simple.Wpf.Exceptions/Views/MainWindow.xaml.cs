@@ -15,7 +15,7 @@ namespace Simple.Wpf.Exceptions.Views
         public MainWindow(IMessageService messageService, ISchedulerService schedulerService)
         {
             InitializeComponent();
-            
+
             _disposable = messageService.Show
                 // Delay to make sure there is time for the animations
                 .Delay(TimeSpan.FromMilliseconds(250), schedulerService.TaskPool)

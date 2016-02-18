@@ -6,6 +6,8 @@ using System.Windows.Data;
 
 namespace Simple.Wpf.Exceptions.Collections
 {
+    using Extensions;
+
     public sealed class RangeObservableCollection<T> : ObservableCollection<T>
     {
         private bool _suppressNotification;
@@ -38,15 +40,11 @@ namespace Simple.Wpf.Exceptions.Collections
         {
             _suppressNotification = true;
 
-            var itemArray = items.ToArray();
-            var itemCount = items.Count();
-            foreach (var item in itemArray)
-            {
-                Add(item);
-            }
+            var array = items.ToArray();
+            array.ForEach(Add);
 
             _suppressNotification = false;
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemArray, itemCount));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, array, array.Length));
         }
     }
 }

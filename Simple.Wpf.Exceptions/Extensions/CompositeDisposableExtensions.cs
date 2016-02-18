@@ -13,9 +13,4 @@ namespace Simple.Wpf.Exceptions.Extensions
 
         }
     }
-
-    namespace Simple.Wpf.Template.Extensions
-    {
-    }
-
 }

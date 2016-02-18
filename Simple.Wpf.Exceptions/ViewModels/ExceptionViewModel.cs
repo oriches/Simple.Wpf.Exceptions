@@ -81,11 +81,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
             _applicationService.CopyToClipboard(_exception.ToString());
         }
 
-        private bool CanOpenLogFolder()
-        {
-            return _applicationService.LogFolder != null;
-        }
-
         private void OpenLogFolder()
         {
             _applicationService.OpenFolder(_applicationService.LogFolder);

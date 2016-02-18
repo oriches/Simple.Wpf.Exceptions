@@ -24,10 +24,10 @@ namespace Simple.Wpf.Exceptions.ViewModels
             ThrowFromUiThreadCommand
                 .ActivateGestures()
                 .SafeSubscribe(x =>
-                           {
-                               Logger.Info("ThrowFromUiThreadCommand executing...");
-                               throw new Exception(x + " - thrown from UI thread.");
-                           }, schedulerService.Dispatcher)
+                               {
+                                   Logger.Info("ThrowFromUiThreadCommand executing...");
+                                   throw new Exception(x + " - thrown from UI thread.");
+                               }, schedulerService.Dispatcher)
                 .DisposeWith(this);
 
             ThrowFromTaskCommand
@@ -49,19 +49,19 @@ namespace Simple.Wpf.Exceptions.ViewModels
             ThrowFromRxCommand
                 .ActivateGestures()
                 .Subscribe(x =>
-                                         {
-                                             Logger.Info("ThrowFromRxCommand executing...");
+                           {
+                               Logger.Info("ThrowFromRxCommand executing...");
 
-                                             Observable.Start(() =>
-                                                              {
-                                                                  Thread.Sleep(1000);
+                               Observable.Start(() =>
+                                                {
+                                                    Thread.Sleep(1000);
 
-                                                                  throw new Exception(x + " - thrown from Rx Start.");
-                                                              }, schedulerService.TaskPool)
-                                                 .Take(1)
-                                                 .Subscribe();
-                                         })
-                                         .DisposeWith(this);
+                                                    throw new Exception(x + " - thrown from Rx Start.");
+                                                }, schedulerService.TaskPool)
+                                   .Take(1)
+                                   .Subscribe();
+                           })
+                .DisposeWith(this);
         }
 
         public ReactiveCommand<object> ThrowFromUiThreadCommand { get; }

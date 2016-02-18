@@ -51,7 +51,7 @@ namespace Simple.Wpf.Exceptions
 
             _messageService = BootStrapper.Resolve<IMessageService>();
             _schedulerService = BootStrapper.Resolve<ISchedulerService>();
-            Exceptions.Extensions.ObservableExtensions.GestureService = BootStrapper.Resolve<IGestureService>();
+            Extensions.ObservableExtensions.GestureService = BootStrapper.Resolve<IGestureService>();
 
             var window = new MainWindow(_messageService, _schedulerService);
 

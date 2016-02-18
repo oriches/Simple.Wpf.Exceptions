@@ -16,11 +16,20 @@ namespace Simple.Wpf.Exceptions.ViewModels
             _exception = exception;
             _applicationService = applicationService;
 
-            OpenLogFolderCommand = ReactiveCommand.Create(Observable.Return(_applicationService.LogFolder != null));
-            CopyCommand = ReactiveCommand.Create(Observable.Return(exception != null));
-            ContinueCommand = ReactiveCommand.Create();
-            ExitCommand = ReactiveCommand.Create();
-            RestartCommand = ReactiveCommand.Create();
+            OpenLogFolderCommand = ReactiveCommand.Create(Observable.Return(_applicationService.LogFolder != null))
+                .DisposeWith(this);
+
+            CopyCommand = ReactiveCommand.Create(Observable.Return(exception != null))
+                .DisposeWith(this);
+
+            ContinueCommand = ReactiveCommand.Create()
+                .DisposeWith(this);
+
+            ExitCommand = ReactiveCommand.Create()
+                .DisposeWith(this);
+
+            RestartCommand = ReactiveCommand.Create()
+                .DisposeWith(this);
 
             OpenLogFolderCommand.ActivateGestures()
                .Subscribe(x => OpenLogFolder())
@@ -95,15 +104,6 @@ namespace Simple.Wpf.Exceptions.ViewModels
         private void Continue()
         {
             ConfirmCommand.Execute(null);
-        }
-
-        protected override void InitialiseConfirmAndDeny()
-        {
-           ConfirmCommand = ReactiveCommand.Create()
-              .DisposeWith(this);
-
-            DenyCommand = ReactiveCommand.Create()
-             .DisposeWith(this);
         }
     }
 }

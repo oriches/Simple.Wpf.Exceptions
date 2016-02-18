@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace Simple.Wpf.Exceptions.Services
 {
+    using NLog;
+    using NLog.Targets;
+
     public sealed class ApplicationService : IApplicationService
     {
         private string _logFolder;
@@ -42,11 +45,10 @@ namespace Simple.Wpf.Exceptions.Services
             System.Diagnostics.Process.Start("explorer.exe", folder);
         }
 
-        private string GetLogFolder()
+        private static string GetLogFolder()
         {
-            var logFile = NLog.LogManager.Configuration.AllTargets
-                .Where(x => x is NLog.Targets.FileTarget)
-                .Select(x => x as NLog.Targets.FileTarget)
+            var logFile = LogManager.Configuration.AllTargets
+                .OfType<FileTarget>()
                 .Select(x => x.FileName as NLog.Layouts.SimpleLayout)
                 .Select(x => x.Text)
                 .FirstOrDefault();

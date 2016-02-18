@@ -2,6 +2,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
 {
     using System;
     using System.Reactive;
+    using System.Reactive.Linq;
     using System.Reactive.Subjects;
     using Commands;
     using Extensions;
@@ -30,23 +31,27 @@ namespace Simple.Wpf.Exceptions.ViewModels
                 .Subscribe(x => _closed.OnNext(Unit.Default))
                 .DisposeWith(this);
 
-            InitialiseConfirmAndDeny();
+            ConfirmCommand = ReactiveCommand.Create(InitialiseCanConfirm())
+              .DisposeWith(this);
 
             ConfirmCommand.ActivateGestures()
                 .Subscribe(x =>
-                {
-                    _confirmed.OnNext(Unit.Default);
-                    _closed.OnNext(Unit.Default);
-                })
-            .DisposeWith(this);
+                           {
+                               _confirmed.OnNext(Unit.Default);
+                               _closed.OnNext(Unit.Default);
+                           })
+                .DisposeWith(this);
+            
+            DenyCommand = ReactiveCommand.Create(InitialiseCanDeny())
+                .DisposeWith(this);
 
             DenyCommand.ActivateGestures()
                 .Subscribe(x =>
-                {
-                    _denied.OnNext(Unit.Default);
-                    _closed.OnNext(Unit.Default);
-                })
-            .DisposeWith(this);
+                           {
+                               _denied.OnNext(Unit.Default);
+                               _closed.OnNext(Unit.Default);
+                           })
+                .DisposeWith(this);
         }
 
         public IObservable<Unit> Closed => _closed;
@@ -56,6 +61,16 @@ namespace Simple.Wpf.Exceptions.ViewModels
         public ReactiveCommand<object> ConfirmCommand { get; protected set; }
         public ReactiveCommand<object> DenyCommand { get; protected set; }
 
-        protected abstract void InitialiseConfirmAndDeny();
+        protected virtual IObservable<bool> InitialiseCanConfirm()
+        {
+            return Observable.Return(true)
+                .StartWith(true);
+        }
+
+        protected virtual IObservable<bool> InitialiseCanDeny()
+        {
+            return Observable.Return(true)
+                .StartWith(true);
+        }
     }
 }

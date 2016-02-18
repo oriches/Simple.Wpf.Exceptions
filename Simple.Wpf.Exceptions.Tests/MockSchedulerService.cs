@@ -13,34 +13,16 @@ namespace Simple.Wpf.Exceptions.Tests
             _testScheduler = testScheduler;
         }
 
-        public IScheduler Dispatcher
-        {
-            get { return _testScheduler; }
-        }
+        public IScheduler Dispatcher => _testScheduler;
 
-        public IScheduler Current
-        {
-            get { return _testScheduler; }
-        }
+        public IScheduler Current => _testScheduler;
 
-        public IScheduler TaskPool
-        {
-            get { return _testScheduler; }
-        }
+        public IScheduler TaskPool => _testScheduler;
 
-        public IScheduler EventLoop
-        {
-            get { return _testScheduler; }
-        }
+        public IScheduler EventLoop => _testScheduler;
 
-        public IScheduler NewThread
-        {
-            get { return _testScheduler; }
-        }
-        
-        public IScheduler StaThread
-        {
-            get { return _testScheduler; }
-        }
+        public IScheduler NewThread => _testScheduler;
+
+        public IScheduler StaThread => _testScheduler;
     }
 }

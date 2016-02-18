@@ -17,7 +17,9 @@ namespace Simple.Wpf.Exceptions.ViewModels
                 .Subscribe(UpdateOverlay)
                 .DisposeWith(this);
 
-            CloseOverlayCommand = ReactiveCommand<object>.Create();
+            CloseOverlayCommand = ReactiveCommand<object>.Create()
+                .DisposeWith(this);
+
             CloseOverlayCommand.Subscribe(x => ClearOverlay())
                 .DisposeWith(this);
         }

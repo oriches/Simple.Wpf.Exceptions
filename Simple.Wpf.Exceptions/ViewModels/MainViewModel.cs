@@ -12,21 +12,22 @@ namespace Simple.Wpf.Exceptions.ViewModels
     {
         public MainViewModel(ISchedulerService schedulerService)
         {
-            ThrowFromUiThreadCommand = ReactiveCommand.Create();
-            ThrowFromTaskCommand = ReactiveCommand.Create();
-            ThrowFromRxCommand = ReactiveCommand.Create();
+            ThrowFromUiThreadCommand = ReactiveCommand.Create()
+                .DisposeWith(this);
+
+            ThrowFromTaskCommand = ReactiveCommand.Create()
+                .DisposeWith(this);
+
+            ThrowFromRxCommand = ReactiveCommand.Create()
+                .DisposeWith(this);
 
             ThrowFromUiThreadCommand
                 .ActivateGestures()
-                .Subscribe(x =>
+                .SafeSubscribe(x =>
                            {
                                Logger.Info("ThrowFromUiThreadCommand executing...");
-
-                               schedulerService.Dispatcher.Schedule<object>(null, TimeSpan.FromMilliseconds(50), (s1, s2) =>
-                               {
-                                   throw new Exception(x + " - thrown from UI thread.");
-                               });
-                           })
+                               throw new Exception(x + " - thrown from UI thread.");
+                           }, schedulerService.Dispatcher)
                 .DisposeWith(this);
 
             ThrowFromTaskCommand

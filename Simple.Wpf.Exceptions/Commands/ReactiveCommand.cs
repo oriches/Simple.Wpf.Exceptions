@@ -1,10 +1,9 @@
-using System;
-using System.Windows.Input;
-
 namespace Simple.Wpf.Exceptions.Commands
 {
+    using System;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
+    using System.Windows.Input;
     using NLog;
 
     public sealed class ReactiveCommand : ReactiveCommand<object>

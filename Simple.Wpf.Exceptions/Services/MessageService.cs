@@ -10,7 +10,7 @@ namespace Simple.Wpf.Exceptions.Services
     using Models;
     using ViewModels;
 
-    public sealed class MessageService : BaseService, IMessageService
+    public sealed class MessageService : DisposableObject, IMessageService
     {
         private readonly Subject<Message> _show;
         private readonly Queue<Message> _waitingMessages = new Queue<Message>();
@@ -22,7 +22,8 @@ namespace Simple.Wpf.Exceptions.Services
             _show = new Subject<Message>()
                 .DisposeWith(this);
 
-            Add(Disposable.Create(() => _waitingMessages.Clear()));
+            Disposable.Create(() => _waitingMessages.Clear())
+                .DisposeWith(this);
         }
 
         public void Post(string header, ICloseableViewModel viewModel)

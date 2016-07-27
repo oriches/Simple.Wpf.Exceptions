@@ -1,6 +1,6 @@
 namespace Simple.Wpf.Exceptions.Services
 {
-    public interface IGestureService
+    public interface IGestureService : IService
     {
         void SetBusy();
     }

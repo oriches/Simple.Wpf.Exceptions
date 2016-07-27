@@ -1,9 +1,11 @@
 namespace Simple.Wpf.Exceptions
 {
     using System;
+    using System.Diagnostics;
     using System.Reflection;
     using Autofac;
     using Autofac.Core;
+    using Services;
     using ViewModels;
 
     public static class BootStrapper
@@ -33,16 +35,34 @@ namespace Simple.Wpf.Exceptions
             }
 
             var builder = new ContainerBuilder();
-            var assembly = Assembly.GetExecutingAssembly();
+            var assemblies = new[] { Assembly.GetExecutingAssembly() };
 
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(t => t.Name.EndsWith("Service"))
-                .SingleInstance()
+            builder.RegisterAssemblyTypes(assemblies)
+                  .Where(t => typeof(IService).IsAssignableFrom(t))
+                  .SingleInstance()
+                  .AsImplementedInterfaces();
+
+            builder.RegisterAssemblyTypes(assemblies)
+                .Where(t => typeof(IViewModel).IsAssignableFrom(t) && !typeof(ITransientViewModel).IsAssignableFrom(t))
                 .AsImplementedInterfaces();
-            
-            builder.RegisterAssemblyTypes(assembly)
-                .Where(t => t.Name.EndsWith("ViewModel"))
-                .AsImplementedInterfaces();
+
+            // several view model instances are transitory and created on the fly, if these are tracked by the container then they
+            // won't be disposed of in a timely manner
+
+            builder.RegisterAssemblyTypes(assemblies)
+                .Where(t => typeof(IViewModel).IsAssignableFrom(t))
+                .Where(t =>
+                {
+                    var isAssignable = typeof(ITransientViewModel).IsAssignableFrom(t);
+                    if (isAssignable)
+                    {
+                        Debug.WriteLine("Transient view model - " + t.Name);
+                    }
+
+                    return isAssignable;
+                })
+                .AsImplementedInterfaces()
+                .ExternallyOwned();
 
             _rootScope = builder.Build();
         }

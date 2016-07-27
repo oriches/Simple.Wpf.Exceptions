@@ -4,7 +4,7 @@ namespace Simple.Wpf.Exceptions.Services
     using Models;
     using ViewModels;
 
-    public interface IMessageService
+    public interface IMessageService : IService
     {
         IObservable<Message> Show { get; }
 

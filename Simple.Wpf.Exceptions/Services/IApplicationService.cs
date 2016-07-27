@@ -1,6 +1,6 @@
 namespace Simple.Wpf.Exceptions.Services
 {
-    public interface IApplicationService
+    public interface IApplicationService : IService
     {
         string LogFolder { get; }
 

@@ -3,7 +3,7 @@ namespace Simple.Wpf.Exceptions.Services
     using System;
     using ViewModels;
 
-    public interface IOverlayService
+    public interface IOverlayService : IService
     {
         IObservable<OverlayViewModel> Show { get; }
 

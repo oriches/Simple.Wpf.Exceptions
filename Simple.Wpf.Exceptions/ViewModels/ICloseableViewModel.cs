@@ -3,7 +3,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
     using System;
     using System.Reactive;
 
-    public interface ICloseableViewModel : IViewModel
+    public interface ICloseableViewModel : ITransientViewModel
     {
         IObservable<Unit> Closed { get; }
         IObservable<Unit> Denied { get; }

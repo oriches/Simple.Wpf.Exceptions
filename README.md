@@ -1,5 +1,7 @@
 # Simple.Wpf.Exceptions
 
+[![Build status](https://ci.appveyor.com/api/projects/status/72staf3ivfet3699?svg=true)](https://ci.appveyor.com/project/oriches/simple-wpf-exceptions)
+
 This isn't a definitive guide or 'proper' way to do exception handling in a WPF application (if there is one), it's my way of dealing with unhandled exceptions. To many times I come across WPF applications which have either no or incomplete exception handling - typically observed as an application that just terminates unexpectedly without giving the user any info about why it crashed, and no easy way to report what happened to first line IT support.
 
 In my opinion when an unhandled exception occurs, an application should do the following:

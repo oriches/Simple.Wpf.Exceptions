@@ -1,10 +1,10 @@
+using System;
+using Simple.Wpf.Exceptions.Commands;
+using Simple.Wpf.Exceptions.Extensions;
+using Simple.Wpf.Exceptions.Services;
+
 namespace Simple.Wpf.Exceptions.ViewModels
 {
-    using System;
-    using Commands;
-    using Extensions;
-    using Services;
-
     public sealed class ChromeViewModel : BaseViewModel, IChromeViewModel
     {
         private OverlayViewModel _overlay;
@@ -46,10 +46,7 @@ namespace Simple.Wpf.Exceptions.ViewModels
         {
             using (SuspendNotifications())
             {
-                if (_overlay != null)
-                {
-                    ClearOverlay();
-                }
+                if (_overlay != null) ClearOverlay();
 
                 UpdateOverlayImpl(overlay);
             }

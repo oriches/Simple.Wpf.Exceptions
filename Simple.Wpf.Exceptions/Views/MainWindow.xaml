@@ -7,7 +7,7 @@
                 xmlns:mh="http://metro.mahapps.com/winfx/xaml/controls"
                 xmlns:viewModels="clr-namespace:Simple.Wpf.Exceptions.ViewModels"
                 Title="MainWindow"
-                BorderBrush="{StaticResource AccentColorBrush}"
+                BorderBrush="{StaticResource MahApps.Brushes.Accent}"
                 BorderThickness="1"
                 d:DataContext="{d:DesignInstance viewModels:ChromeViewModel}">
 

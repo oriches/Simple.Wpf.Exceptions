@@ -3,7 +3,7 @@
 
     <Style x:Key="ExceptionButtonStyle"
            TargetType="{x:Type Button}"
-           BasedOn="{StaticResource MetroButton}">
+           BasedOn="{StaticResource MahApps.Styles.Button}">
         <Setter Property="MinWidth"
                 Value="100" />
         <Setter Property="Padding"
